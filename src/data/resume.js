@@ -175,6 +175,6 @@ export const interests = [
   {
     id: 'events', title: 'Work Events',
     text: 'Moments from events I joined at SYSTEX, HPE/Aruba, and IBM.',
-    photos: photos('work', [[1, 'Company party 2020'], [2, 'Aruba seminar'], [3, 'Aruba seminar audience'], [4, 'Team event'], [6, 'Team dinner'], [8, 'Office'], [9, 'IBM'], [10, 'Aruba SE Bootcamp']]),
+    photos: photos('work', [[1, 'Company party 2020'], [2, 'Speaking at an Aruba seminar'], [3, 'Presenting at an Aruba seminar'], [4, 'Team event'], [6, 'Team dinner'], [8, 'Office'], [9, 'IBM'], [10, 'Aruba SE Bootcamp']]),
   },
 ]
