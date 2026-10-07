@@ -1,32 +1,39 @@
 :root {
-  --bg: #faf8f4; --card: #fff; --text: #2b2926; --muted: #7a746a; --accent: #1f5f8b; --border: #e4dfd5;
+  --red: #c5050c; --red-dark: #6e0207; --black: #0f0f0f;
+  --bg: #f5f4f0; --card: #fff; --text: #0f0f0f; --muted: #777; --accent: #c5050c; --border: #e5e3de;
   --serif: 'DM Serif Display', Georgia, serif; --sans: 'DM Sans', system-ui, 'Segoe UI', sans-serif;
-}
-@media (prefers-color-scheme: dark) {
-  :root { --bg: #16171d; --card: #1f2028; --text: #e8e6e1; --muted: #9a958b; --accent: #7fb6dd; --border: #2e303a; }
+  color-scheme: light;
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 var(--sans); }
+body { margin: 0; overflow-x: hidden; background: var(--bg); color: var(--text); font: 16px/1.6 var(--sans); }
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 h1, h2 { font-family: var(--serif); font-weight: 400; }
 h1 { font-size: 2.4rem; margin: 0 0 .25rem; }
-h2 { font-size: 1.7rem; margin: 2.5rem 0 1rem; }
+h2 { font-size: 1.7rem; margin: 2.5rem 0 1rem; padding-bottom: .4rem; position: relative; }
+h2::after { content: ''; position: absolute; left: 0; bottom: 0; width: 40px; height: 2px; background: var(--red); }
 h3 { margin: 0; font-size: 1.05rem; }
 h4 { margin: 1rem 0 .4rem; }
-.nav { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center; padding: 1rem max(16px, calc(50% - 450px)); border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 1; }
+.nav { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center; padding: 1rem max(16px, calc(50% - 450px)); border-top: 4px solid var(--red); border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 1; }
 .nav nav { display: flex; gap: 1.2rem; }
 .nav a { color: var(--text); }
+.nav a:hover { color: var(--red); text-decoration: none; }
 .nav nav a.router-link-exact-active, .nav nav a.router-link-active { color: var(--accent); font-weight: 600; }
 .brand { font-family: var(--serif); font-size: 1.2rem; }
 .container { max-width: 900px; margin: 0 auto; padding: 2rem 16px 3rem; }
 .hero { display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; }
-.avatar { width: 180px; height: 180px; border-radius: 50%; object-fit: cover; object-position: top; border: 3px solid var(--border); }
-.tagline { color: var(--accent); font-weight: 500; margin: 0 0 1rem; }
+.avatar { width: 180px; height: 180px; border-radius: 50%; object-fit: cover; object-position: 50% 72%; border: 3px solid #fff; box-shadow: 0 4px 20px rgba(0,0,0,.4); position: relative; }
+.hero-banner { position: relative; margin: -2rem calc(50% - 50vw) 2rem; padding: 4rem 0; color: #fff; background: url('/bascom-hill-spring-2025-1600.jpg') center 40% / cover; overflow: hidden; }
+.hero-banner::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(110,2,7,.85), rgba(150,4,9,.72) 50%, rgba(90,2,5,.88)); }
+.hero-banner .hero { position: relative; max-width: 900px; margin: 0 auto; padding: 0 24px; }
+.hero-banner h1 { text-shadow: 0 2px 16px rgba(0,0,0,.55); }
+.hero-banner a { color: #fff; text-decoration: underline; }
+.tagline { color: #fff; opacity: .9; font-weight: 300; letter-spacing: .08em; text-transform: uppercase; margin: 0 0 1rem; }
 .links { display: flex; flex-wrap: wrap; gap: 1rem; }
 .stats { display: flex; gap: 1rem; flex-wrap: wrap; margin: 2rem 0 1rem; }
 .stat { flex: 1; min-width: 140px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; text-align: center; }
-.stat strong { display: block; font: 2rem var(--serif); color: var(--accent); }
+.stat { border-top: 3px solid var(--red); }
+.stat strong { display: block; font: 2rem var(--serif); color: var(--red); }
 .card { display: block; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.3rem; margin-bottom: 1rem; color: inherit; }
 .row { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
 .muted { color: var(--muted); font-size: .92rem; }
@@ -41,5 +48,5 @@ li { margin-bottom: .35rem; }
 .gallery img { width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: 12px; border: 1px solid var(--border); }
 .gallery figcaption { color: var(--muted); font-size: .85rem; margin-top: .3rem; }
 .back { display: inline-block; margin-bottom: 1rem; }
-.footer { text-align: center; color: var(--muted); padding: 2rem 0; font-size: .85rem; }
+.footer { margin-top: 0; text-align: center; color: rgba(255,255,255,.8); background: var(--red-dark); padding: 2rem 0; font-size: .85rem; }
 .note { margin: .4rem 0; }

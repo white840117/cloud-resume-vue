@@ -3,6 +3,7 @@ import { profile } from '../data/resume'
 </script>
 
 <template>
+  <div class="hero-banner">
   <section class="hero">
     <img :src="profile.photo" :alt="profile.name" class="avatar" />
     <div>
@@ -17,6 +18,7 @@ import { profile } from '../data/resume'
       </div>
     </div>
   </section>
+  </div>
   <section class="stats">
     <div v-for="h in profile.highlights" :key="h.label" class="stat">
       <strong>{{ h.value }}</strong><span>{{ h.label }}</span>
