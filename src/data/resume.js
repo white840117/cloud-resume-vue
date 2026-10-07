@@ -109,11 +109,13 @@ export const projects = [
     ],
   },
   {
-    id: 'aws-cloud-resume', title: 'Serverless Cloud Portfolio & Automated CI/CD Pipeline', period: '04/2026 – Present', tags: ['AWS S3', 'CloudFront', 'GitHub Actions'],
+    id: 'aws-cloud-resume', title: 'Serverless Cloud Portfolio & Automated CI/CD Pipeline', period: '04/2026 – Present', tags: ['Vue 3', 'Vite', 'AWS S3', 'CloudFront', 'Route 53', 'ACM', 'GitHub Actions'],
     links: [{ label: 'GitHub: cloud-resume-vue', url: 'https://github.com/white840117/cloud-resume-vue' }],
     bullets: [
-      'Architected a highly available serverless portfolio using AWS (S3, CloudFront) and Claude AI for rapid infrastructure-as-code (IaC) deployment.',
-      'Implemented a fully automated CI/CD pipeline using GitHub Actions to achieve deployment under 20 seconds, ensuring enterprise-level security via HTTPS and OAC.',
+      'Architected a highly available serverless portfolio using AWS (S3, CloudFront) for storage and global edge delivery, and Claude AI for rapid infrastructure-as-code (IaC) deployment.',
+      'Built the site as a multi-page Vue 3 + Vite app (Vue Router) with all resume content driven from a single data file.',
+      'Enforced enterprise-level security using Origin Access Control (OAC) to isolate S3 from public access, with HTTPS enforced via AWS Certificate Manager (ACM) and custom domain routing via Route 53.',
+      'Implemented a fully automated CI/CD pipeline using GitHub Actions: every push to main installs dependencies, builds with Vite, syncs the output to S3, and invalidates the CloudFront cache — a seamless Code-to-Cloud deployment in under 20 seconds.',
     ],
   },
   {
