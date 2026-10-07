@@ -156,11 +156,6 @@ const photos = (prefix, items) =>
 
 export const interests = [
   {
-    id: 'gaming', title: 'Online Gaming',
-    text: 'I love playing online games with friends — Apex Legends, The Sims, Battlefield, and PGA Tour.',
-    photos: [],
-  },
-  {
     id: 'sports', title: 'Sports — Badminton & Golf',
     text: 'Badminton and golf are my favorite ways to stay active (and pickleball once in a while).',
     photos: photos('sport', [[1, 'Golf'], [2, 'Golf with friends'], [3, 'Golf day'], [4, 'Badminton'], [5, 'Pickleball']]),
@@ -168,11 +163,16 @@ export const interests = [
   {
     id: 'travel', title: 'Road Trips, Games & Sightseeing',
     text: 'I enjoy road trips, catching live games, and exploring new places with friends and family.',
-    photos: photos('trip', [[1, 'Grand Teton road trip'], [2, 'Baseball game'], [3, 'Disney'], [4, 'Japan'], [5, 'Japan'], [6, 'Riding'], [7, 'Friends'], [8, 'Wizarding World'], [9, 'City trip'], [10, 'Night lights'], [11, 'Friends outing'], [12, 'Special event']]),
+    photos: photos('trip', [[1, 'Grand Teton road trip'], [2, 'Baseball game'], [3, 'Disney'], [4, 'Japan'], [5, 'Japan'], [6, 'Riding'], [7, 'Friends'], [8, 'Wizarding World'], [9, 'City trip'], [10, 'Night lights'], [11, 'Friends outing']]),
+  },
+  {
+    id: 'ntust', title: 'NTUST Graduate School Days',
+    text: 'Memories from my Master of Information Management at National Taiwan University of Science and Technology.',
+    photos: photos('school', [[3, 'Graduation'], [1, 'NTUST'], [2, 'NTUST']]),
   },
   {
     id: 'events', title: 'Work Events',
     text: 'Moments from events I joined at SYSTEX, HPE/Aruba, and IBM.',
-    photos: photos('work', [[1, 'Company party 2020'], [2, 'Aruba seminar'], [3, 'Aruba seminar audience'], [4, 'Team event'], [5, 'Team selfie'], [6, 'Team dinner'], [7, 'Team event'], [8, 'Office'], [9, 'IBM']]),
+    photos: photos('work', [[1, 'Company party 2020'], [2, 'Aruba seminar'], [3, 'Aruba seminar audience'], [4, 'Team event'], [6, 'Team dinner'], [8, 'Office'], [9, 'IBM'], [10, 'Aruba SE Bootcamp']]),
   },
 ]
