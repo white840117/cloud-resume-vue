@@ -110,7 +110,7 @@ export const projects = [
   },
   {
     id: 'aws-cloud-resume', title: 'Serverless Cloud Portfolio & Automated CI/CD Pipeline', period: '04/2026 – Present', tags: ['AWS S3', 'CloudFront', 'GitHub Actions'],
-    links: [{ label: 'GitHub: aws-cloud-resume', url: 'https://github.com/white840117/aws-cloud-resume' }],
+    links: [{ label: 'GitHub: cloud-resume-vue', url: 'https://github.com/white840117/cloud-resume-vue' }],
     bullets: [
       'Architected a highly available serverless portfolio using AWS (S3, CloudFront) and Claude AI for rapid infrastructure-as-code (IaC) deployment.',
       'Implemented a fully automated CI/CD pipeline using GitHub Actions to achieve deployment under 20 seconds, ensuring enterprise-level security via HTTPS and OAC.',
