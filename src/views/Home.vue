@@ -5,7 +5,7 @@ import { profile } from '../data/resume'
 <template>
   <div class="hero-banner">
   <section class="hero">
-    <img :src="profile.photo" :alt="profile.name" class="avatar" />
+    <img :src="profile.photo" :alt="profile.name" class="avatar" draggable="false" />
     <div>
       <h1>{{ profile.name }}</h1>
       <p class="tagline">{{ profile.tagline }}</p>

@@ -50,3 +50,4 @@ li { margin-bottom: .35rem; }
 .back { display: inline-block; margin-bottom: 1rem; }
 .footer { margin-top: 0; text-align: center; color: rgba(255,255,255,.8); background: var(--red-dark); padding: 2rem 0; font-size: .85rem; }
 .note { margin: .4rem 0; }
+img { -webkit-user-drag: none; user-select: none; -webkit-touch-callout: none; pointer-events: none; }

@@ -8,9 +8,7 @@ import { interests } from '../data/resume'
     <p>{{ c.text }}</p>
     <div v-if="c.photos.length" class="gallery">
       <figure v-for="p in c.photos" :key="p.src">
-        <a :href="p.src" target="_blank" rel="noopener">
-          <img :src="p.src" :alt="p.caption" loading="lazy" />
-        </a>
+        <img :src="p.src" :alt="p.caption" loading="lazy" draggable="false" />
         <figcaption>{{ p.caption }}</figcaption>
       </figure>
     </div>
