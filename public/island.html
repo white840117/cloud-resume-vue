@@ -1161,6 +1161,8 @@ function initRenderer() {
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, isMobile ? 1.4 : 1.75));
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  // Shadow casters are static (walkers use blob shadows), so redraw the shadow map only when the sun moves or the LOD changes.
+  renderer.shadowMap.autoUpdate = false; renderer.shadowMap.needsUpdate = true;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1;
   stage.prepend(renderer.domElement);
@@ -1688,7 +1690,7 @@ function buildWalkers() {
     pack: [new THREE.BoxGeometry(0.075, 0.08, 0.04), 1], helmet: [new THREE.SphereGeometry(0.082, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2), 1],
     bag: [new THREE.BoxGeometry(0.075, 0.1, 0.045), 1],
   };
-  for (const k in defs) { const [g, per] = defs[k]; const m = new THREE.InstancedMesh(g, std(), total * per); m.instanceMatrix.setUsage(THREE.DynamicDrawUsage); m.castShadow = k === 'body' || k === 'head'; m.frustumCulled = false; WM[k] = m; scene.add(m); }
+  for (const k in defs) { const [g, per] = defs[k]; const m = new THREE.InstancedMesh(g, std(), total * per); m.instanceMatrix.setUsage(THREE.DynamicDrawUsage); m.castShadow = false; m.frustumCulled = false; WM[k] = m; scene.add(m); }
   WM.shadow = new THREE.InstancedMesh(new THREE.CircleGeometry(0.09, 16).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: '#000000', transparent: true, opacity: 0.22, depthWrite: false }), total);
   WM.shadow.instanceMatrix.setUsage(THREE.DynamicDrawUsage); WM.shadow.frustumCulled = false; WM.shadow.renderOrder = 3; scene.add(WM.shadow);
   const rnd = mulberry32(2024); let n = 0;
@@ -1851,6 +1853,7 @@ function applyDay(min, force) {
     const tt = THREE.MathUtils.clamp((q - 360) / 720, 0, 1); const az = Math.PI * (0.15 + 0.7 * tt); const el = 0.35 + Math.sin(tt * Math.PI) * 0.75;
     const dir = new THREE.Vector3(Math.cos(az) * Math.cos(el), Math.sin(el), 0.55 * Math.cos(el) + 0.35).normalize();
     sun.position.set(center.x + dir.x * 40, dir.y * 40, center.z + dir.z * 40); skyMat.uniforms.uSunDir.value.copy(dir);
+    if (renderer) renderer.shadowMap.needsUpdate = true;
   }
   // day segment
   const seg = DATA.dayCycle.findIndex((s) => min >= s.from && min < s.to);
@@ -2185,6 +2188,9 @@ function pick(e) {
 // loop
 // ============================================================
 let last = performance.now(); let lastLOD = null;
+// layoutLabels() reads element rects (forces a reflow), so run it a few times a second instead of every frame.
+const LABEL_LAYOUT_MS = 180; let lastLabelLayout = -Infinity, labelsStale = false;
+function maybeLayoutLabels(now) { if (now - lastLabelLayout < LABEL_LAYOUT_MS) { labelsStale = true; return; } layoutLabels(); lastLabelLayout = now; labelsStale = false; }
 function loop(now) {
   requestAnimationFrame(loop);
   const dt = Math.min(0.08, (now - last) / 1000); last = now;
@@ -2193,16 +2199,16 @@ function loop(now) {
   if (flight) { const k = Math.min(1, (now - flight.start) / flight.dur); const e = ease(k); camera.position.lerpVectors(flight.p0, flight.p1, e); controls.target.lerpVectors(flight.t0, flight.t1, e); if (k >= 1) flight = null; dirty = true; }
   if (controls.update()) dirty = true;
   if (applyViewOffset(dt)) dirty = true;
-  if (!dirty) return;
+  if (!dirty) { if (labelsStale) maybeLayoutLabels(now); return; }
   applyDay(state.minutes);
   updateClock();
   updateWalkers(dt, animate);
   if (animate) { updateClouds(state.time); updateBoats(state.time); waterMat.uniforms.uTime.value = state.time; for (const F of FLOWS) F.mat.uniforms.uTime.value = state.time; }
   const camD = camera.position.distanceTo(controls.target); const lod = camD < 26;
-  if (lod !== lastLOD) { lastLOD = lod; for (const m of smallKit.meshes) m.visible = lod; }
+  if (lod !== lastLOD) { lastLOD = lod; for (const m of smallKit.meshes) m.visible = lod; renderer.shadowMap.needsUpdate = true; }
   renderer.render(scene, camera);
   labelRenderer.render(scene, camera);
-  layoutLabels();
+  maybeLayoutLabels(now);
   dirty = false;
 }
 
