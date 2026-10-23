@@ -75,7 +75,7 @@ export const experience = [
 export const education = [
   { school: 'University of Wisconsin-Madison', degree: 'Master of Science in Information', gpa: '4.0/4.0', period: '09/2025 – 12/2026', location: 'Madison, WI, U.S.', note: 'Relevant Coursework: Systems Analysis & PM, Data Analytics for Decisions, Data Viz & Communication' },
   { school: 'National Taiwan University of Science and Technology', degree: 'Master of Information Management', gpa: '3.92/4.3', period: '09/2017 – 06/2019', location: 'Taipei City, Taiwan' },
-  { school: 'Tamkang University', degree: 'Bachelor of Business Administration in Information Management', period: '09/2013 – 06/2017', location: 'New Taipei City, Taiwan' },
+  { school: 'Tamkang University', degree: 'Bachelor of Business Administration in Information Management', gpa: '3.615/4.0', period: '09/2013 – 06/2017', location: 'New Taipei City, Taiwan' },
 ]
 
 export const certifications = [

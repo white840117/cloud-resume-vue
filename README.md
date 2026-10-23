@@ -41,8 +41,11 @@ Required repository secrets: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_B
 | `#/experience` | Work experience, education, certifications, skills |
 | `#/projects` | Project cards, with a detail page per project (`#/projects/:id`) |
 | `#/interests` | Interests and photo gallery |
+| `#/island` | 3D interactive portfolio island (embeds `public/island.html`) |
 
 Hash-based routing keeps deep links working on S3/CloudFront without extra rewrite rules. All resume content lives in `src/data/resume.js`, and photos live in `public/images/`.
+
+> **Note:** `public/island.html` is a standalone page (Three.js loaded from the jsDelivr CDN) with its own copy of the content in a `DATA` object. Whenever `src/data/resume.js` changes, update the island's `DATA` by hand so both stay in sync.
 
 ---
 

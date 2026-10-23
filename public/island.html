@@ -1,0 +1,2213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>John Lo Island</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=DM+Serif+Display:ital@0;1&display=swap">
+<style>
+/* Layout: full-bleed 3D clay island, frosted cards float at the edges (brand top-left, detail left, list right, time bar bottom). Single warm-light look by design. */
+:root {
+  --ink: #1f1a1a;
+  --paper: rgba(255, 251, 247, .84);
+  --paper-solid: #fffaf6;
+  --line: #eadfd6;
+  --red: #c5050c;
+  --red-soft: #fbe8e6;
+  --yellow: #fcea8b;
+  --muted: #74675f;
+  --teal: #3e7c8c;
+  --ok: #2f8a57;
+  --display: 'DM Serif Display', Georgia, 'Noto Serif TC', serif;
+  --sans: 'DM Sans', 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif;
+  --mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --shadow: 0 1px 2px #4a2a140f, 0 8px 24px #4a2a141a, 0 24px 60px #4a2a1414;
+  --chip-shadow: 0 2px 8px #4a2a1414;
+  --gutter-l: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+  --gutter-t: max(16px, env(safe-area-inset-top, 0px));
+  --gutter-b: max(16px, env(safe-area-inset-bottom, 0px));
+  color-scheme: light;
+}
+html, body { height: 100%; }
+body { margin: 0; background: radial-gradient(circle at 50% 40%, #fffdf9, #edddcf); color: var(--ink); font: 14px/1.5 var(--sans); overflow: hidden; -webkit-font-smoothing: antialiased; }
+#app { position: fixed; inset: 0; overflow: hidden; }
+#stage { position: absolute; inset: 0; touch-action: none; z-index: 0; isolation: isolate; }
+#stage canvas { display: block; outline: none; }
+#labels { position: absolute; inset: 0; pointer-events: none; }
+button { font: inherit; color: inherit; }
+.btn { min-height: 44px; min-width: 44px; border-radius: 9px; border: 1px solid transparent; background: transparent; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 12px; transition: background .15s, color .15s; }
+.btn:hover { background: var(--yellow); }
+.btn[aria-pressed="true"] { background: var(--ink); color: var(--paper-solid); }
+.btn:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible, select:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+.glass { background: var(--paper); -webkit-backdrop-filter: blur(16px) saturate(1.2); backdrop-filter: blur(16px) saturate(1.2); border: 1px solid #ffffffb3; box-shadow: var(--shadow); }
+.eyebrow { font: 700 10px/1.2 var(--mono); letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+a { color: var(--red); }
+
+/* brand + tools */
+#brand { position: absolute; left: var(--gutter-l); top: var(--gutter-t); border-radius: 18px; padding: 14px 18px 14px; max-width: 320px; z-index: 5; }
+#brand h1 { margin: 4px 0 0; font: 400 26px/1.05 var(--display); text-wrap: balance; }
+#brand .sub { margin: 4px 0 0; color: var(--muted); font-size: 12.5px; }
+#brand .sub a { color: var(--red); text-decoration: none; font-weight: 500; }
+#tools { position: absolute; left: var(--gutter-l); top: calc(var(--gutter-t) + 118px); display: flex; gap: 6px; z-index: 5; }
+#tools .btn { background: var(--paper); box-shadow: var(--chip-shadow); border-color: #fff; font-weight: 500; }
+#tools .btn:hover { background: var(--yellow); }
+#tools .btn[aria-pressed="true"] { background: var(--ink); color: var(--paper-solid); }
+
+/* detail card */
+#card { position: absolute; left: var(--gutter-l); top: calc(var(--gutter-t) + 176px); max-height: calc(100% - var(--gutter-t) - var(--gutter-b) - 268px); width: 340px; border-radius: 22px; z-index: 6; display: flex; flex-direction: column; overflow: hidden; background: var(--paper-solid); box-shadow: var(--shadow); }
+#card .card-scroll { overflow: auto; padding: 18px 20px 22px; flex: 1 1 auto; min-height: 0; }
+#card .close { position: absolute; right: 8px; top: 8px; z-index: 2; background: var(--paper-solid); }
+.card-head { display: flex; gap: 12px; align-items: center; padding-right: 40px; }
+.isl-icon { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; color: #fff; font: 400 22px var(--display); flex: none; }
+.card-title { margin: 2px 0 0; font: 400 24px/1.12 var(--display); text-wrap: balance; }
+.card-p { margin: 12px 0 0; color: #3a3230; }
+.muted-line { color: var(--muted); font: 12px var(--mono); margin-top: 3px; }
+.thumb { width: 160px; height: 160px; border-radius: 16px; background: radial-gradient(circle at 50% 35%, #fffdf9, #f0e4d8); display: block; margin: 4px auto 6px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 8px; margin-top: 14px; }
+.tile { background: var(--red-soft); border-radius: 12px; padding: 10px 10px 9px; min-width: 0; }
+.tile b { display: block; font: italic 400 26px/1 var(--display); color: var(--red); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile span { display: block; font-size: 11.5px; line-height: 1.3; margin-top: 5px; color: #4b3f3b; }
+.fact-list { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.fact-list li { padding-left: 14px; position: relative; color: #3a3230; }
+.fact-list li::before { content: ''; position: absolute; left: 0; top: .6em; width: 6px; height: 6px; border-radius: 50%; background: var(--red); }
+.section-label { margin: 18px 0 8px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; background: #fff; box-shadow: var(--chip-shadow); padding: 5px 11px; font-size: 12.5px; border: 0; cursor: default; }
+button.chip { cursor: pointer; min-height: 32px; }
+button.chip:hover { background: var(--yellow); }
+.chip.cream { background: #fbf3e8; }
+.item-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.item-list button { width: 100%; text-align: left; justify-content: flex-start; background: #fbf5ee; padding: 8px 10px; min-height: 44px; }
+.item-list button:hover { background: var(--yellow); }
+.num { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--red); color: #fff; font: 700 11px var(--sans); flex: none; }
+.timeline { margin-top: 10px; position: relative; height: 34px; }
+.timeline .track { position: absolute; left: 0; right: 0; top: 10px; height: 6px; border-radius: 3px; background: var(--line); }
+.timeline .span { position: absolute; top: 8px; height: 10px; border-radius: 5px; background: var(--red); min-width: 10px; }
+.timeline .ticks { position: absolute; left: 0; right: 0; top: 22px; display: flex; justify-content: space-between; font: 10px var(--mono); color: var(--muted); }
+.ext { display: inline-flex; align-items: center; gap: 4px; margin-top: 16px; font-weight: 600; text-decoration: none; }
+.ext:hover { text-decoration: underline; }
+.flow-route { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.flow-route .arrow { color: var(--red); font-weight: 700; }
+.legend-line { display: inline-block; width: 34px; height: 0; border-top: 3px solid var(--red); vertical-align: middle; }
+.legend-line.dash { border-top-style: dashed; }
+.legend-line.dot { border-top-style: dotted; }
+
+/* sidebar */
+#side { position: absolute; right: var(--gutter-r); top: var(--gutter-t); bottom: calc(var(--gutter-b) + 92px); width: 318px; border-radius: 22px; z-index: 5; display: flex; flex-direction: column; overflow: hidden; }
+#side .side-top { padding: 14px 14px 8px; display: grid; gap: 10px; }
+#search { width: 100%; box-sizing: border-box; min-height: 44px; border-radius: 12px; border: 1px solid var(--line); background: #fff; padding: 0 14px; font: inherit; }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: #f3e9df; border-radius: 11px; padding: 3px; }
+.tabs .btn { min-height: 38px; font-weight: 500; }
+#sideList { overflow: auto; padding: 4px 14px 16px; flex: 1; min-height: 0; }
+#sideList details { border-bottom: 1px solid var(--line); }
+#sideList summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; min-height: 48px; font-weight: 600; }
+#sideList summary::-webkit-details-marker { display: none; }
+#sideList summary .dot { width: 12px; height: 12px; border-radius: 4px; flex: none; }
+#sideList summary .count { margin-left: auto; color: var(--muted); font: 11px var(--mono); }
+#sideList .item-list { margin: 0 0 10px; }
+.flow-row { width: 100%; text-align: left; display: grid !important; gap: 2px; padding: 10px !important; background: #fbf5ee; margin-bottom: 6px; justify-items: start; justify-content: stretch; }
+.flow-row small { color: var(--muted); }
+.empty { color: var(--muted); padding: 12px 2px; }
+
+/* HUD */
+#hud { position: absolute; left: 50%; transform: translateX(-50%); bottom: var(--gutter-b); border-radius: 999px; padding: 6px 10px; display: flex; align-items: center; gap: 4px; z-index: 6; max-width: calc(100vw - 32px); }
+#hud .clock { display: grid; padding: 0 12px 0 10px; min-width: 92px; }
+#hud .clock b { font: italic 400 22px/1 var(--display); font-variant-numeric: tabular-nums; }
+#hud .clock span { font-size: 11px; color: var(--muted); white-space: nowrap; }
+#hud .sep { width: 1px; align-self: stretch; margin: 6px 4px; background: var(--line); }
+#hud .btn { flex-direction: column; gap: 1px; padding: 4px 9px; min-width: 52px; border-radius: 14px; }
+#hud .btn .ic { width: 18px; height: 18px; display: block; }
+#hud .btn .ic svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; display: block; }
+#hud .btn .lb { font-size: 10.5px; font-weight: 500; white-space: nowrap; }
+#timeBtn { display: none; }
+
+/* log */
+#log { position: absolute; top: var(--gutter-t); right: calc(var(--gutter-r) + 330px); width: 290px; max-height: 46vh; border-radius: 18px; z-index: 5; display: flex; flex-direction: column; overflow: hidden; }
+#app.side-closed #log { right: var(--gutter-r); }
+#log header { display: flex; align-items: center; gap: 8px; padding: 12px 14px 8px; white-space: nowrap; }
+.live { display: inline-flex; align-items: center; gap: 5px; font: 700 10px var(--mono); letter-spacing: 1.5px; color: var(--ok); }
+.live::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); animation: pulse 1.6s infinite; }
+@keyframes pulse { 50% { opacity: .3; } }
+#logFilter { margin-left: auto; min-height: 32px; border-radius: 8px; border: 1px solid var(--line); background: #fff; font: inherit; font-size: 12px; max-width: 140px; }
+#logList { list-style: none; margin: 0; padding: 0 14px 12px; overflow: auto; display: grid; gap: 6px; font-size: 12.5px; }
+#logList li { display: grid; grid-template-columns: 40px 1fr; gap: 6px; }
+#logList time { font: 11px var(--mono); color: var(--muted); padding-top: 1px; }
+#logList .k { font-weight: 700; }
+#logList .k.arrive { color: var(--ok); } #logList .k.depart { color: var(--teal); } #logList .k.handoff { color: var(--red); }
+
+/* legend */
+#legend { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(var(--gutter-b) + 76px); border-radius: 999px; padding: 6px 14px; display: flex; gap: 14px; font-size: 12px; z-index: 5; flex-wrap: wrap; justify-content: center; }
+#legend span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+
+/* island labels */
+.isl-label { pointer-events: auto; cursor: pointer; border: 0; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px 6px 7px; border-radius: 999px; background: #fffaf6eb; box-shadow: var(--chip-shadow); font: 600 12.5px var(--sans); white-space: nowrap; transition: opacity .2s, background .2s; }
+.isl-label .n { font: 700 10px var(--mono); color: #fff; border-radius: 999px; padding: 3px 6px; }
+.isl-label.sel { background: var(--ink); color: var(--paper-solid); }
+.isl-label.dim { opacity: .45; }
+.isl-label.compact .t { display: none; }
+.isl-label.compact { padding-right: 7px; }
+.pin { pointer-events: auto; cursor: pointer; border: 0; width: 26px; height: 26px; border-radius: 50%; background: var(--red); color: #fff; font: 700 12px var(--sans); box-shadow: 0 2px 6px #0003; display: grid; place-items: center; }
+.pin.lit { background: #d9a400; }
+.bubble { background: #fff; border-radius: 10px; padding: 3px 8px; font-size: 11px; box-shadow: var(--chip-shadow); white-space: nowrap; transform: translateY(-6px); }
+
+/* loading + help */
+#loading { position: absolute; inset: 0; z-index: 20; display: grid; place-items: center; background: radial-gradient(circle at 50% 40%, #fffdf9, #edddcf); transition: opacity .5s; text-align: center; padding: 24px; }
+#loading.done { opacity: 0; pointer-events: none; }
+#loading h2 { margin: 0; font: 400 clamp(40px, 9vw, 76px)/1 var(--display); }
+#loading p { margin: 12px 0 0; color: var(--muted); }
+#loadErr { margin-top: 16px; color: var(--red); max-width: 420px; }
+#help { position: absolute; inset: 0; z-index: 15; display: grid; place-items: center; background: #2a1d1633; padding: 16px; }
+#help .box { background: var(--paper-solid); border-radius: 22px; box-shadow: var(--shadow); padding: 22px 24px; max-width: 420px; width: 100%; box-sizing: border-box; }
+#help h3 { margin: 4px 0 12px; font: 400 26px var(--display); }
+#help ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; counter-reset: s; }
+#help li { display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: start; counter-increment: s; }
+#help li::before { content: counter(s); width: 26px; height: 26px; border-radius: 50%; background: var(--red); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 12px; }
+#help .go { margin-top: 18px; width: 100%; background: var(--ink); color: var(--paper-solid); font-weight: 600; }
+#help .go:hover { background: var(--red); }
+.handle { display: none; }
+
+/* phones */
+@media (max-width: 800px) {
+  #brand { padding: 10px 14px; max-width: calc(100vw - 100px); }
+  #brand h1 { font-size: 20px; }
+  #brand .sub { display: none; }
+  #tools { flex-direction: column; top: var(--gutter-t); left: auto; right: var(--gutter-r); }
+  #tools .btn [data-i18n] { display: none; }
+  #side, #card { left: 0; right: 0; top: auto; bottom: 0; width: auto; border-radius: 22px 22px 0 0; padding-bottom: env(safe-area-inset-bottom, 0px); }
+  #side { height: 52vh; z-index: 8; }
+  #card { height: 34vh; max-height: none; z-index: 9; }
+  #side.full, #card.full { height: calc(100% - var(--gutter-t)); }
+  .handle { display: block; width: 100%; height: 26px; border: 0; background: transparent; cursor: grab; flex: none; touch-action: none; position: relative; }
+  .handle::after { content: ''; position: absolute; left: 50%; top: 10px; width: 44px; height: 5px; margin-left: -22px; border-radius: 3px; background: #cbbcb0; }
+  #card .card-scroll { padding-top: 4px; }
+  #timeBtn { display: inline-flex; position: absolute; left: var(--gutter-l); bottom: var(--gutter-b); z-index: 6; background: var(--paper); box-shadow: var(--chip-shadow); font-weight: 600; }
+  #hud { display: none; flex-wrap: wrap; justify-content: center; border-radius: 22px; bottom: calc(var(--gutter-b) + 54px); width: calc(100vw - 32px); box-sizing: border-box; }
+  #hud.open { display: flex; }
+  #hud .sep { display: none; }
+  #hud .clock { width: 100%; text-align: center; padding: 4px 0; }
+  #log { left: var(--gutter-l); right: var(--gutter-r) !important; width: auto; top: calc(var(--gutter-t) + 64px); max-height: 30vh; }
+  #legend { bottom: calc(var(--gutter-b) + 54px); }
+}
+@media (prefers-reduced-motion: reduce) { .live::before { animation: none; } #loading { transition: none; } }
+</style>
+
+<div id="app" class="side-closed">
+  <div id="stage"><div id="labels"></div></div>
+
+  <header id="brand" class="glass">
+    <div class="eyebrow" data-i18n="eyebrow">Portfolio island</div>
+    <h1 id="brandName">Yun-Ting (John) Lo</h1>
+    <p class="sub"><span data-i18n="brandSub">Career, projects and interests as a small island.</span> <a href="https://johnlo.cloud/" target="_blank" rel="noopener">johnlo.cloud ↗</a></p>
+  </header>
+
+  <nav id="tools" aria-label="View">
+    <button class="btn" id="btnOverview" aria-label="Overview"><span aria-hidden="true">⌂</span><span data-i18n="overview">Overview</span></button>
+    <button class="btn" id="btnList" aria-pressed="false" aria-label="List"><span aria-hidden="true">☰</span><span data-i18n="list">List</span></button>
+    <button class="btn" id="btnHelp" aria-label="How to explore">?</button>
+    <button class="btn" id="btnLang" aria-label="Switch language">中</button>
+  </nav>
+
+  <aside id="card" hidden aria-live="polite">
+    <button class="handle" aria-label="Resize panel"></button>
+    <button class="btn close" id="cardClose" aria-label="Close">✕</button>
+    <div class="card-scroll" id="cardBody"></div>
+  </aside>
+
+  <aside id="side" class="glass" hidden>
+    <button class="handle" aria-label="Resize panel"></button>
+    <div class="side-top">
+      <input id="search" type="search" autocomplete="off" placeholder="Search islands, projects, skills">
+      <div class="tabs" role="tablist">
+        <button class="btn" id="tabTopics" role="tab" aria-pressed="true" data-i18n="tabTopics">Islands</button>
+        <button class="btn" id="tabFlows" role="tab" aria-pressed="false" data-i18n="tabFlows">Skill flows</button>
+      </div>
+    </div>
+    <div id="sideList"></div>
+  </aside>
+
+  <section id="log" class="glass" hidden aria-label="Island log">
+    <header><span class="eyebrow" data-i18n="log">Island log</span><span class="live">LIVE</span>
+      <select id="logFilter" aria-label="Filter log"></select></header>
+    <ol id="logList"></ol>
+  </section>
+
+  <div id="legend" class="glass" hidden></div>
+
+  <button class="btn" id="timeBtn" aria-expanded="false">◷ <span data-i18n="time">Time</span></button>
+  <div id="hud" class="glass" role="toolbar" aria-label="Time and layers">
+    <div class="clock"><b id="clockTime">10:00</b><span id="clockSeg">Learn</span></div>
+    <button class="btn" data-time="360"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 18h16M7 14a5 5 0 0 1 10 0M12 4v3M5.6 7.6l1.8 1.8M18.4 7.6l-1.8 1.8"/></svg></span><span class="lb" data-i18n="morning">Morning</span></button>
+    <button class="btn" data-time="720"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg></span><span class="lb" data-i18n="day">Day</span></button>
+    <button class="btn" data-time="1080"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 18h16M7 18a5 5 0 0 1 10 0M12 8v3M8 12l-2-2M16 12l2-2"/><path d="M9 4l3 3 3-3"/></svg></span><span class="lb" data-i18n="dusk">Dusk</span></button>
+    <button class="btn" data-time="1260"><span class="ic"><svg viewBox="0 0 24 24"><path d="M19 14.5A7.5 7.5 0 0 1 9.5 5a7.5 7.5 0 1 0 9.5 9.5z"/></svg></span><span class="lb" data-i18n="night">Night</span></button>
+    <span class="sep"></span>
+    <button class="btn" id="tgNames" aria-pressed="false"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="11" rx="5"/><path d="M8 11.5h8"/></svg></span><span class="lb" data-i18n="names">Names</span></button>
+    <button class="btn" id="tgWalkers" aria-pressed="true"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.5"/><path d="M12 8v7M12 15l-3 6M12 15l3 6M8 11h8"/></svg></span><span class="lb" data-i18n="carriers">Carriers</span></button>
+    <button class="btn" id="tgFlows" aria-pressed="false"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg></span><span class="lb" data-i18n="flows">Flows</span></button>
+    <button class="btn" id="tgPause" aria-pressed="false"><span class="ic"><svg viewBox="0 0 24 24"><path d="M9 5v14M15 5v14"/></svg></span><span class="lb" data-i18n="pause">Pause</span></button>
+    <button class="btn" id="tgBird" aria-pressed="false"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2"/></svg></span><span class="lb" data-i18n="bird">Top view</span></button>
+    <button class="btn" id="tgLog" aria-pressed="false"><span class="ic"><svg viewBox="0 0 24 24"><path d="M5 6h14M5 12h14M5 18h9"/></svg></span><span class="lb" data-i18n="logShort">Log</span></button>
+  </div>
+
+  <div id="help" hidden role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+    <div class="box">
+      <div class="eyebrow" data-i18n="helpEyebrow">How to explore</div>
+      <h3 id="helpTitle" data-i18n="helpTitle">Welcome to the island</h3>
+      <ol>
+        <li><span data-i18n="help1">Drag to orbit, scroll or pinch to zoom.</span></li>
+        <li><span data-i18n="help2">Tap an island or a building to open its card. Each island is one part of my career.</span></li>
+        <li><span data-i18n="help3">Use the bar at the bottom to change the time of day, and turn on Flows to see how skills travel between islands.</span></li>
+      </ol>
+      <button class="btn go" id="helpGo" data-i18n="helpGo">Start exploring</button>
+    </div>
+  </div>
+
+  <div id="loading">
+    <div>
+      <h2 id="ldTitle">John's Island</h2>
+      <p data-i18n="loading">Assembling the island…</p>
+      <div id="loadErr" hidden></div>
+    </div>
+  </div>
+</div>
+
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+// ============================================================
+// DATA — everything on the island is driven from this object.
+// Content source: johnlo.cloud (src/data/resume.js). Edit here only.
+// ============================================================
+const SITE = 'https://johnlo.cloud/';
+const DATA = {
+  person: {
+    name: 'Yun-Ting (John) Lo',
+    short: { en: "John's Island", zh: 'John 島' },
+    tagline: { en: 'Solution Architect · Business Systems · Data Analytics', zh: '解決方案架構師 · 商業系統 · 資料分析' },
+    site: SITE,
+  },
+  // level = line style of a skill flow
+  levels: {
+    shipped:    { en: 'Shipped at work', zh: '工作中實際交付', style: 0 },
+    coursework: { en: 'Coursework → practice', zh: '課堂 → 實作', style: 1 },
+    ongoing:    { en: 'Ongoing', zh: '持續進行中', style: 2 },
+  },
+  roles: {
+    consultant: { en: 'Consultant', zh: '顧問' },
+    engineer:   { en: 'Engineer', zh: '工程師' },
+    researcher: { en: 'Analyst', zh: '分析師' },
+    student:    { en: 'Grad student', zh: '研究生' },
+    traveler:   { en: 'Traveler', zh: '旅人' },
+  },
+  cargo: {
+    briefcase: { en: 'a POC deck', zh: 'POC 簡報' },
+    gear:      { en: 'automation scripts', zh: '自動化腳本' },
+    speech:    { en: 'stakeholder notes', zh: '利害關係人筆記' },
+    laptop:    { en: 'an API integration', zh: 'API 整合' },
+    book:      { en: 'course notes', zh: '課堂筆記' },
+    chart:     { en: 'a dashboard', zh: '儀表板' },
+    code:      { en: 'Vue components', zh: 'Vue 元件' },
+    ball:      { en: 'a golf ball', zh: '高爾夫球' },
+    cap:       { en: 'a diploma', zh: '畢業證書' },
+  },
+  islands: [
+    { id: 'about', q: 0, r: 0, ground: 0, accent: '#c5050c', tree: 'maple',
+      name: { en: 'About', zh: '關於我' }, icon: 'J',
+      period: '2013 – Present',
+      summary: { en: 'Strategic professional with 4+ years bridging technical engineering teams and business stakeholders at global enterprises like HPE.', zh: '4 年以上經驗，在 HPE 等全球企業擔任工程團隊與商業端之間的橋樑。' },
+      link: SITE + '#/',
+      skills: ['Requirements Gathering', 'Stakeholder Management', 'System Design', 'SDLC'],
+      items: [
+        { id: 'profile', model: 'townhall', name: { en: 'Yun-Ting (John) Lo', zh: '羅勻廷 John' },
+          desc: { en: 'Solution Architect · Business Systems · Data Analytics, based in Madison, WI.', zh: '解決方案架構師 · 商業系統 · 資料分析，現居 Madison, WI。' },
+          facts: [ { n: '4+', en: 'years of experience', zh: '年工作經驗' }, { n: '25+', en: 'companies supported', zh: '服務過的公司' }, { n: '10+', en: 'solutions & systems delivered', zh: '交付的方案與系統' } ],
+          period: '07/2015 – Present', tags: ['Solution Architecture', 'Business Systems', 'Data Analytics'] },
+        { id: 'languages', model: 'globe', name: { en: 'Languages', zh: '語言' },
+          desc: { en: 'Works across US and Taiwan teams in both languages.', zh: '用中英文與美國、台灣團隊合作。' },
+          facts: [ { n: 'Native', en: 'Mandarin', zh: '中文' }, { n: 'Fluent', en: 'English', zh: '英文' } ], tags: ['Mandarin', 'English'] },
+        { id: 'madison', model: 'house', name: { en: 'Home base: Madison, WI', zh: '據點：Madison, WI' },
+          desc: { en: 'Currently in Madison for the MS in Information at UW–Madison.', zh: '目前在 Madison 就讀 UW–Madison 資訊碩士。' },
+          facts: [ { n: 'WI', en: 'Madison, Wisconsin', zh: '威斯康辛州 Madison' } ], tags: ['Madison'] },
+        { id: 'contact', model: 'mailbox', name: { en: 'Contact', zh: '聯絡方式' },
+          desc: { en: 'john840117@gmail.com · LinkedIn · GitHub', zh: 'john840117@gmail.com · LinkedIn · GitHub' },
+          facts: [], tags: ['Email', 'LinkedIn', 'GitHub'],
+          links: [ { label: 'LinkedIn', url: 'https://linkedin.com/in/white840117/' }, { label: 'GitHub', url: 'https://github.com/white840117' } ] },
+      ] },
+
+    { id: 'hpe', q: 1, r: -1, ground: 1, accent: '#01a982', tree: 'conifer',
+      name: { en: 'HPE', zh: 'HPE' }, icon: 'H',
+      period: '06/2020 – 02/2024',
+      summary: { en: 'Solution Architect in Taipei: requirements, deployments, POCs and customer enablement for Aruba networking.', zh: '在台北擔任解決方案架構師：需求定義、導入部署、POC 與 Aruba 網路方案的客戶培訓。' },
+      link: SITE + '#/experience',
+      skills: ['Networking (Cisco, Aruba)', 'SD-WAN', 'Firewall', 'Project Management'],
+      items: [
+        { id: 'hpe-sa', model: 'tower', name: { en: 'Solution Architect', zh: '解決方案架構師' },
+          desc: { en: 'Directed cross-functional engineering and business teams to define product requirements and technical specifications.', zh: '帶領跨部門工程與商業團隊定義產品需求與技術規格。' },
+          facts: [ { n: '$500k+', en: 'customer value across 20+ initiatives', zh: '客戶價值，橫跨 20+ 個企業專案' }, { n: '20%', en: 'increase in product adoption', zh: '產品採用率提升' }, { n: '$5M+', en: 'annual revenue driven', zh: '年營收' } ],
+          period: '06/2020 – 02/2024', tags: ['Requirements', 'Technical Specs', 'Data-driven'] },
+        { id: 'hpe-deploy', model: 'factory', name: { en: 'Semiconductor deployment', zh: '半導體廠導入' },
+          desc: { en: 'Led the end-to-end deployment for a leading semiconductor manufacturer through automated workflow integration.', zh: '為半導體大廠主導端到端導入，以自動化流程整合解決既有瓶頸。' },
+          facts: [ { n: '50%', en: 'less operational time', zh: '作業時間縮短' } ],
+          period: '06/2022 – 12/2022', tags: ['Automation', 'Deployment'] },
+        { id: 'hpe-stage', model: 'stage', name: { en: 'Workshops & seminars', zh: '工作坊與研討會' },
+          desc: { en: 'Presented Aruba networking solutions and led hands-on training as a workshop and seminar speaker.', zh: '以講者身分介紹 Aruba 網路方案並帶實機訓練。' },
+          facts: [ { n: '50+', en: 'attendees across 12 channel partners', zh: '名學員，來自 12 家通路夥伴' }, { n: '200+', en: 'seminar audience', zh: '研討會聽眾' } ],
+          period: '06/2020 – 02/2024', tags: ['Public Speaking', 'Enablement'] },
+        { id: 'hpe-lab', model: 'lab', name: { en: 'POC & demo labs', zh: 'POC 與 Demo 實驗室' },
+          desc: { en: 'Built and maintained lab, POC and demo environments across wireless, wired and data center solutions.', zh: '建置並維護無線、有線與資料中心的實驗、POC 與 Demo 環境。' },
+          facts: [ { n: '10+', en: 'lab, POC and demo environments', zh: '個實驗／POC／Demo 環境' }, { n: '30+', en: 'customer issues resolved with R&D and TAC', zh: '個客戶問題，與原廠 R&D、TAC 一起解決' } ],
+          period: '06/2020 – 02/2024', tags: ['ClearPass', 'NAC', 'SD-WAN'] },
+        { id: 'hpe-qbr', model: 'coins', name: { en: 'Quarterly Business Reviews', zh: '季度業務檢討 QBR' },
+          desc: { en: 'Co-presented QBRs alongside Sales teams from a technical perspective.', zh: '與業務團隊共同簡報 QBR，負責技術觀點。' },
+          facts: [ { n: '10+', en: 'QBRs co-presented', zh: '場 QBR' }, { n: '10%+', en: 'YoY growth after each review', zh: '每次檢討後的年成長' } ],
+          period: '06/2020 – 02/2024', tags: ['QBR', 'Sales Partnership'] },
+        { id: 'hpe-ops', model: 'clock', name: { en: 'Operational standards', zh: '作業標準' },
+          desc: { en: 'Spearheaded end-to-end project management and defined operational standards.', zh: '主導端到端專案管理並訂定作業標準。' },
+          facts: [ { n: '30%', en: 'less system downtime', zh: '系統停機時間減少' } ],
+          period: '06/2020 – 02/2024', tags: ['Project Management', 'Process Standardization'] },
+        { id: 'hpe-cloud', model: 'antenna', name: { en: 'Cloud network management', zh: '網管上雲' },
+          desc: { en: 'Planned and assessed the migration of network management (NMS) from on-premises to the cloud-based Aruba Central platform.', zh: '規劃並評估網管系統（NMS）從地端遷移到雲端 Aruba Central。' },
+          facts: [], period: '06/2020 – 02/2024', tags: ['Aruba Central', 'Cloud Migration'] },
+      ] },
+
+    { id: 'early', q: 2, r: -2, ground: 2, accent: '#6f7fb5', tree: 'cherry',
+      name: { en: 'Early Career', zh: '早期經歷' }, icon: 'E',
+      period: '07/2015 – 05/2020',
+      summary: { en: 'Pre-sales consulting at SYSTEX and a marketing internship at Microsoft Taiwan.', zh: '精誠資訊售前顧問，以及台灣微軟行銷實習。' },
+      link: SITE + '#/experience',
+      skills: ['RFP Process Management', 'Tableau', 'Market Research', 'Competitive Analysis'],
+      items: [
+        { id: 'systex', model: 'bank', name: { en: 'SYSTEX · Pre-sales Consultant', zh: '精誠資訊 · 售前顧問' },
+          desc: { en: 'Led product planning and implementation for financial services projects at a major Taiwanese financial institution.', zh: '為台灣大型金融機構主導產品規劃與導入。' },
+          facts: [ { n: '170+', en: 'branches', zh: '間分行' }, { n: '7,000+', en: 'users', zh: '位使用者' }, { n: '15%+', en: 'projected time savings', zh: '預估節省時間' } ],
+          period: '09/2019 – 05/2020', tags: ['Financial Services', 'Implementation'] },
+        { id: 'systex-poc', model: 'billboard', name: { en: 'POC & RFP', zh: 'POC 與 RFP' },
+          desc: { en: 'Standardized POC documentation and interactive Tableau and Excel presentations to secure executive buy-in.', zh: '標準化 POC 文件，並用 Tableau 與 Excel 互動簡報取得高層支持。' },
+          facts: [ { n: '20%', en: 'system efficiency improvement shown', zh: '系統效率提升' }, { n: '15%', en: 'shorter project lifecycle', zh: '專案週期縮短' }, { n: '100%', en: 'on-time RFP submission', zh: 'RFP 準時提交' } ],
+          period: '09/2019 – 05/2020', tags: ['Tableau', 'Excel', 'RFP'] },
+        { id: 'microsoft', model: 'tower2', name: { en: 'Microsoft Taiwan · Marketing (Intern)', zh: '台灣微軟 · 行銷實習' },
+          desc: { en: 'Orchestrated promotional campaigns for Microsoft Surface via social media.', zh: '透過社群媒體執行 Microsoft Surface 推廣活動。' },
+          facts: [ { n: '5+', en: 'campaigns', zh: '檔推廣活動' }, { n: '500+', en: 'potential customers engaged', zh: '位潛在客戶互動' }, { n: '10%', en: 'more regional brand awareness', zh: '區域品牌知名度提升' } ],
+          period: '07/2015 – 06/2016', tags: ['Marketing', 'Social Media'] },
+        { id: 'computex', model: 'booth', name: { en: 'Computex booth', zh: 'Computex 攤位' },
+          desc: { en: 'Coordinated logistics and booth design for Computex, and facilitated 3 internal workshops.', zh: '負責 Computex 攤位設計與後勤，並主持 3 場內部工作坊。' },
+          facts: [ { n: '1,000+', en: 'visitors', zh: '名訪客' }, { n: '50+', en: 'qualified business leads', zh: '筆有效商機' } ],
+          period: '07/2015 – 06/2016', tags: ['Events', 'Lead Generation'] },
+      ] },
+
+    { id: 'ibm', q: 1, r: 0, ground: 0, accent: '#0f62fe', tree: 'palm',
+      name: { en: 'IBM', zh: 'IBM' }, icon: 'I',
+      period: '07/2026 – 08/2026',
+      summary: { en: 'Associate Application Consultant (Intern) on a cross-border MES integration project in Taipei.', zh: '在台北擔任應用顧問實習生，參與跨國 MES 整合專案。' },
+      link: SITE + '#/experience',
+      skills: ['PostgreSQL', 'DBeaver', 'Azure DevOps', 'SDLC', 'Agent AI'],
+      items: [
+        { id: 'ibm-mes', model: 'factory2', name: { en: 'MES integration (SDLC)', zh: 'MES 整合（完整 SDLC）' },
+          desc: { en: 'Managed the full SDLC for a cross-border MES integration, bridging US and Taiwan teams through UAT.', zh: '負責跨國 MES 整合的完整 SDLC，串連美台團隊直到 UAT。' },
+          facts: [ { n: '100%', en: 'of targeted project objectives', zh: '專案目標達成' } ],
+          period: '07/2026 – 08/2026', tags: ['SDLC', 'UAT', 'MES'] },
+        { id: 'ibm-sit', model: 'magnifier', name: { en: 'SIT & data integrity', zh: 'SIT 與資料正確性' },
+          desc: { en: 'Ran System Integration Testing and PostgreSQL queries via DBeaver on a live enterprise environment.', zh: '在正式企業環境執行 SIT，並用 DBeaver 跑 PostgreSQL 查詢。' },
+          facts: [ { n: '5+', en: 'bugs caught before production', zh: '個上線前攔截的問題' }, { n: '20+', en: 'test cases for SIT/UAT', zh: '個 SIT/UAT 測試案例' } ],
+          period: '07/2026 – 08/2026', tags: ['SIT', 'PostgreSQL', 'DBeaver'] },
+        { id: 'ibm-ai', model: 'robot', name: { en: 'AI-built prototypes', zh: 'AI 加速原型' },
+          desc: { en: 'Built interactive UI prototypes with Google Gemini and IBM Bob.', zh: '用 Google Gemini 與 IBM Bob 快速做出互動式 UI 原型。' },
+          facts: [ { n: '1–2 days', en: 'down from 1–2 weeks', zh: '原本需要 1–2 週' } ],
+          period: '07/2026 – 08/2026', tags: ['Google Gemini', 'IBM Bob', 'Prototyping'] },
+        { id: 'ibm-ttt', model: 'classroom', name: { en: 'Train-the-Trainer guide', zh: 'TTT 教育訓練手冊' },
+          desc: { en: 'Created a Train-The-Trainer Guide and an MES operation manual.', zh: '撰寫 Train-The-Trainer 教材與 MES 操作手冊。' },
+          facts: [ { n: '30+', en: 'stakeholders working independently', zh: '位使用者能獨立操作' } ],
+          period: '07/2026 – 08/2026', tags: ['Enablement', 'Documentation'] },
+        { id: 'ibm-ed', model: 'book', name: { en: 'External Design document', zh: 'External Design 文件' },
+          desc: { en: 'Authored the functional specification the engineering team built against.', zh: '撰寫給工程團隊開發依據的功能規格。' },
+          facts: [ { n: '1', en: 'module specified', zh: '個模組' }, { n: '4+', en: 'functions specified', zh: '個功能' } ],
+          period: '07/2026 – 08/2026', tags: ['Functional Spec'] },
+      ] },
+
+    { id: 'ai', q: 1, r: 1, ground: 1, accent: '#a4508b', tree: 'willow',
+      name: { en: 'AI & Automation', zh: 'AI 與自動化' }, icon: 'A',
+      period: '06/2022 – Present',
+      summary: { en: 'Projects that use LLMs and automation to remove manual steps.', zh: '用 LLM 與自動化減少人工步驟的專案。' },
+      link: SITE + '#/projects',
+      skills: ['Agent AI', 'Vibe Coding', 'Claude Code', 'Model Context Protocol (MCP)', 'Python'],
+      items: [
+        { id: 'resume-generator', model: 'robot2', name: { en: 'LLM Resume Customization Platform', zh: 'LLM 履歷客製化平台' },
+          desc: { en: 'Full-stack platform with an LLM agent that matches job descriptions to resumes across four weighted dimensions.', zh: '全端平台，用 LLM agent 從四個加權維度比對 JD 與履歷。' },
+          facts: [ { n: '60%+', en: 'less manual customization time', zh: '人工客製時間減少' }, { n: '10+', en: 'job descriptions processed', zh: '份 JD 已處理' }, { n: '4', en: 'weighted matching dimensions', zh: '個加權比對維度' } ],
+          period: '09/2026 – Present', tags: ['Vue 3', 'TypeScript', 'Flask', 'python-docx'], link: SITE + '#/projects/resume-generator' },
+        { id: 'ado-to-word', model: 'printer', name: { en: 'ADO to Word Test Reports', zh: 'ADO 轉 Word 測試報告' },
+          desc: { en: 'Co-built with a colleague: Azure DevOps REST API plus LLM-assisted grouping to generate Word test reports.', zh: '與同事共同開發：串 Azure DevOps REST API，用 LLM 分組產生 Word 測試報告。' },
+          facts: [ { n: '<5 min', en: 'down from 2 hours per report', zh: '原本每份要 2 小時' }, { n: '30', en: 'person IBM team using it', zh: '人的 IBM 團隊使用' } ],
+          period: '08/2026', tags: ['Vue 3', 'Flask', 'Azure DevOps API', 'LLM'], link: SITE + '#/projects/ado-to-word' },
+        { id: 'network-automation', model: 'gears', name: { en: 'Network Automation (Ansible)', zh: '網路自動化（Ansible）' },
+          desc: { en: 'Microservice automation environment with Ansible, moving semiconductor-scale networks from manual configuration to automated rollout. Customer details are under NDA.', zh: '用 Ansible 建立微服務自動化環境，讓半導體規模的網路從手動設定改為自動化部署。客戶細節受 NDA 保護。' },
+          facts: [ { n: '50%', en: 'less operational time at the customer', zh: '客戶端作業時間縮短' } ],
+          period: '06/2022 – 12/2022', tags: ['Ansible', 'AOS-CX', 'Networking'], link: SITE + '#/projects/network-automation' },
+      ] },
+
+    { id: 'cloud', q: 0, r: 1, ground: 2, accent: '#3e7c8c', tree: 'fruit',
+      name: { en: 'Cloud & Data', zh: '雲端與資料' }, icon: 'C',
+      period: '09/2025 – Present',
+      summary: { en: 'The serverless site you are visiting, plus database and dashboard projects.', zh: '你正在看的無伺服器網站，以及資料庫與儀表板專案。' },
+      link: SITE + '#/projects',
+      skills: ['AWS', 'SQL', 'Tableau', 'Power BI', 'Data Visualization'],
+      items: [
+        { id: 'aws-cloud-resume', model: 'cloudstack', name: { en: 'Serverless portfolio & CI/CD', zh: '無伺服器作品集與 CI/CD' },
+          desc: { en: 'johnlo.cloud on S3 + CloudFront with OAC, ACM and Route 53, deployed by GitHub Actions on every push.', zh: 'johnlo.cloud 架在 S3 + CloudFront，搭配 OAC、ACM、Route 53，每次 push 由 GitHub Actions 自動部署。' },
+          facts: [ { n: '<20 s', en: 'code-to-cloud deployment', zh: '從程式碼到上線' } ],
+          period: '04/2026 – Present', tags: ['Vue 3', 'Vite', 'AWS S3', 'CloudFront', 'Route 53', 'GitHub Actions'], link: SITE + '#/projects/aws-cloud-resume' },
+        { id: 'squad-builder', model: 'field', name: { en: 'Squad Builder Database', zh: '國家隊選秀資料庫' },
+          desc: { en: 'Relational database built from EA Sports FC 24 data to help optimize World Cup rosters.', zh: '用 EA Sports FC 24 資料建立關聯式資料庫，協助優化世界盃名單。' },
+          facts: [ { n: '26', en: 'man World Cup rosters', zh: '人世界盃名單' }, { n: '€150M', en: 'club budget filter in scouting queries', zh: '球隊預算門檻的球探查詢' } ],
+          period: '01/2026 – 03/2026', tags: ['SQL', 'MySQL', 'Excel', 'Google Gemini'], link: SITE + '#/projects/squad-builder' },
+        { id: 'workflow-dashboard', model: 'billboard2', name: { en: 'Workflow Dashboard', zh: '流程優化儀表板' },
+          desc: { en: 'Real-time shared feedback dashboard with resolution criteria that guard against metric gaming.', zh: '即時共享回報儀表板，並以結案標準防止指標造假。' },
+          facts: [ { n: '100%', en: 'issue visibility within 5 minutes', zh: '問題 5 分鐘內可見' }, { n: '>80%', en: 'resolution accuracy', zh: '結案正確率' } ],
+          period: '09/2025 – 12/2025', tags: ['Dashboard', 'Cross-team Collaboration'], link: SITE + '#/projects/workflow-dashboard' },
+        { id: 'urban-park', model: 'park', name: { en: 'Urban Park & Public Health', zh: '城市公園與公共衛生' },
+          desc: { en: 'Cleansed public health data and built a quadrant-based Tableau dashboard for priority interventions.', zh: '清理公共衛生資料，做成象限式 Tableau 儀表板找出優先介入的城市。' },
+          facts: [ { n: '900+', en: 'cities analyzed', zh: '個城市' } ],
+          period: '09/2025 – 12/2025', tags: ['Tableau', 'Excel', 'AI-assisted analysis'], link: SITE + '#/projects/urban-park' },
+      ] },
+
+    { id: 'uw', q: -1, r: 0, ground: 0, accent: '#c5050c', tree: 'maple',
+      name: { en: 'UW–Madison', zh: '威斯康辛大學' }, icon: 'W',
+      period: '09/2025 – 12/2026',
+      summary: { en: 'MS in Information, and Project Assistant at the Information School.', zh: '資訊碩士，同時在資訊學院擔任 Project Assistant。' },
+      link: SITE + '#/experience',
+      skills: ['Data Analytics', 'Data Visualization', 'Database Design', 'Text Mining'],
+      items: [
+        { id: 'uw-ms', model: 'dome', name: { en: 'MS in Information', zh: '資訊碩士' },
+          desc: { en: 'University of Wisconsin–Madison, Master of Science in Information.', zh: '威斯康辛大學麥迪遜分校資訊碩士。' },
+          facts: [ { n: '4.0', en: 'GPA (out of 4.0)', zh: 'GPA（滿分 4.0）' } ],
+          period: '09/2025 – 12/2026', tags: ['MSIS'] },
+        { id: 'uw-pa', model: 'classroom', name: { en: 'Project Assistant (Reader/Grader)', zh: 'Project Assistant（助教／閱卷）' },
+          desc: { en: 'Audits assignments and database schemas for Securing Information Networks and Applied Database Design.', zh: '批改 Securing Information Networks 與 Applied Database Design 的作業與資料庫設計。' },
+          facts: [ { n: '80+', en: 'students reviewed', zh: '位學生' }, { n: '100%', en: 'data accuracy in Canvas', zh: 'Canvas 資料正確率' } ],
+          period: '01/2026 – 12/2026', tags: ['Canvas LMS', 'Database Design'] },
+        { id: 'uw-course', model: 'book2', name: { en: 'Relevant coursework', zh: '相關課程' },
+          desc: { en: 'Systems Analysis & PM, Data Analytics for Decisions, Data Viz & Communication.', zh: 'Systems Analysis & PM、Data Analytics for Decisions、Data Viz & Communication。' },
+          facts: [ { n: '3', en: 'core courses listed', zh: '門代表課程' } ],
+          period: '09/2025 – 12/2026', tags: ['Systems Analysis', 'Data Analytics', 'Data Viz'] },
+      ] },
+
+    { id: 'edu', q: -2, r: 1, ground: 1, accent: '#58a6a6', tree: 'conifer',
+      name: { en: 'Degrees & Certs', zh: '學歷與證照' }, icon: 'D',
+      period: '09/2013 – 07/2026',
+      summary: { en: 'Information management degrees in Taiwan and two professional certifications.', zh: '在台灣的兩個資管學位，以及兩張專業證照。' },
+      link: SITE + '#/experience',
+      skills: ['Information Management', 'Design Thinking', 'Networking'],
+      items: [
+        { id: 'ntust', model: 'school', name: { en: 'NTUST · Master of Information Management', zh: '台科大 · 資訊管理碩士' },
+          desc: { en: 'National Taiwan University of Science and Technology.', zh: '國立臺灣科技大學。' },
+          facts: [ { n: '3.92', en: 'GPA (out of 4.3)', zh: 'GPA（滿分 4.3）' } ],
+          period: '09/2017 – 06/2019', tags: ['Information Management'] },
+        { id: 'tamkang', model: 'school2', name: { en: 'Tamkang · BBA in Information Management', zh: '淡江 · 資訊管理學士' },
+          desc: { en: 'Tamkang University, New Taipei City.', zh: '淡江大學，新北市。' },
+          facts: [ { n: '3.615', en: 'GPA (out of 4.0)', zh: 'GPA（滿分 4.0）' } ],
+          period: '09/2013 – 06/2017', tags: ['Business Administration'] },
+        { id: 'cert-hpe', model: 'trophy', name: { en: 'HPE Certified Networking Professional', zh: 'HPE 網路專業認證' },
+          desc: { en: 'Issued by HPE.', zh: 'HPE 頒發。' },
+          facts: [ { n: '10/2021', en: 'issued', zh: '取得' } ], period: '10/2021', tags: ['Networking'] },
+        { id: 'cert-ibm', model: 'bulb', name: { en: 'Enterprise Design Thinking Practitioner', zh: 'Enterprise Design Thinking 實踐者' },
+          desc: { en: 'Issued by IBM.', zh: 'IBM 頒發。' },
+          facts: [ { n: '07/2026', en: 'issued', zh: '取得' } ], period: '07/2026', tags: ['Design Thinking'] },
+      ] },
+
+    { id: 'fun', q: 0, r: -1, ground: 2, accent: '#e0a030', tree: 'cherry',
+      name: { en: 'Interests', zh: '興趣' }, icon: '★',
+      period: 'weekends',
+      summary: { en: 'Badminton, golf, road trips, live games and exploring new places.', zh: '羽球、高爾夫、公路旅行、看球賽、探索新地方。' },
+      link: SITE + '#/interests',
+      skills: ['Badminton', 'Golf', 'Road Trips'],
+      items: [
+        { id: 'golf', model: 'golf', name: { en: 'Golf', zh: '高爾夫' },
+          desc: { en: 'Golf days with friends.', zh: '和朋友打高爾夫。' }, facts: [], tags: ['Golf'] },
+        { id: 'badminton', model: 'court', name: { en: 'Badminton & pickleball', zh: '羽球與匹克球' },
+          desc: { en: 'Badminton is a favorite way to stay active, with pickleball once in a while.', zh: '羽球是最常做的運動，偶爾打匹克球。' }, facts: [], tags: ['Badminton', 'Pickleball'] },
+        { id: 'roadtrip', model: 'car', name: { en: 'Road trips', zh: '公路旅行' },
+          desc: { en: 'Road trips such as Grand Teton, with friends and family.', zh: '和朋友家人公路旅行，例如 Grand Teton。' }, facts: [], tags: ['Grand Teton'] },
+        { id: 'sightseeing', model: 'ferris', name: { en: 'Live games & sightseeing', zh: '看球賽與觀光' },
+          desc: { en: 'Baseball games, Disney, Japan and city trips.', zh: '棒球賽、迪士尼、日本與城市旅行。' }, facts: [], tags: ['Baseball', 'Japan', 'Disney'] },
+      ] },
+  ],
+
+  // Skill flows: who walks between islands, carrying what
+  flows: [
+    { id: 'f-presales', from: 'early', to: 'hpe', role: 'consultant', cargo: 'briefcase', level: 'shipped', walkers: 6,
+      name: { en: 'Pre-sales & POC', zh: '售前與 POC' }, desc: { en: 'POC and RFP habits from SYSTEX carried into solution architecture at HPE.', zh: '在精誠累積的 POC 與 RFP 經驗，帶到 HPE 的解決方案架構。' } },
+    { id: 'f-network', from: 'hpe', to: 'ai', role: 'engineer', cargo: 'gear', level: 'shipped', walkers: 6,
+      name: { en: 'Networking → Ansible automation', zh: '網路 → Ansible 自動化' }, desc: { en: 'Aruba networking expertise became the network automation deployment.', zh: 'Aruba 網路專業成為網路自動化部署的基礎。' } },
+    { id: 'f-stakeholder', from: 'hpe', to: 'ibm', role: 'consultant', cargo: 'speech', level: 'shipped', walkers: 5,
+      name: { en: 'Stakeholder management', zh: '利害關係人管理' }, desc: { en: 'Customer-facing presentation and requirement work reused for the cross-border MES project.', zh: '面對客戶的簡報與需求經驗，用在跨國 MES 專案。' } },
+    { id: 'f-ado', from: 'ibm', to: 'ai', role: 'researcher', cargo: 'laptop', level: 'shipped', walkers: 5,
+      name: { en: 'Azure DevOps + LLM', zh: 'Azure DevOps + LLM' }, desc: { en: 'Manual reporting pain at IBM turned into the ADO to Word automation tool.', zh: 'IBM 專案的手動報告痛點，變成 ADO 轉 Word 自動化工具。' } },
+    { id: 'f-sql', from: 'uw', to: 'cloud', role: 'student', cargo: 'chart', level: 'coursework', walkers: 6,
+      name: { en: 'SQL & Tableau', zh: 'SQL 與 Tableau' }, desc: { en: 'Database and visualization coursework applied in the data projects.', zh: '資料庫與視覺化課程，應用在資料專案中。' } },
+    { id: 'f-sapm', from: 'uw', to: 'ibm', role: 'student', cargo: 'book', level: 'coursework', walkers: 4,
+      name: { en: 'Systems Analysis & PM', zh: '系統分析與專案管理' }, desc: { en: 'Systems analysis coursework put into practice through the SDLC at IBM.', zh: '系統分析課程在 IBM 的 SDLC 中實際應用。' } },
+    { id: 'f-im', from: 'edu', to: 'early', role: 'student', cargo: 'cap', level: 'coursework', walkers: 5,
+      name: { en: 'Information management foundation', zh: '資管基礎' }, desc: { en: 'Two information management degrees led into pre-sales consulting.', zh: '兩個資管學位，開啟售前顧問的職涯。' } },
+    { id: 'f-vue', from: 'ai', to: 'cloud', role: 'engineer', cargo: 'code', level: 'ongoing', walkers: 5,
+      name: { en: 'Vue 3 + Claude Code', zh: 'Vue 3 + Claude Code' }, desc: { en: 'The same Vue 3 stack powers the resume platform and this portfolio site.', zh: '同一套 Vue 3 技術用在履歷平台與這個作品集網站。' } },
+    { id: 'f-weekend', from: 'about', to: 'fun', role: 'traveler', cargo: 'ball', level: 'ongoing', walkers: 4,
+      name: { en: 'Weekend mode', zh: '週末模式' }, desc: { en: 'Off to the golf course, the badminton court or the next road trip.', zh: '出發去球場、羽球館，或下一趟公路旅行。' } },
+  ],
+
+  // A day on the island: which items light up (yellow) in each window
+  dayCycle: [
+    { from: 0,    to: 360,  name: { en: 'Overnight deploy', zh: '夜間部署' }, items: ['aws-cloud-resume', 'network-automation'] },
+    { from: 360,  to: 540,  name: { en: 'Warm-up', zh: '晨間運動' }, items: ['golf', 'badminton'] },
+    { from: 540,  to: 720,  name: { en: 'Learn', zh: '學習' }, items: ['uw-ms', 'uw-course', 'ntust'] },
+    { from: 720,  to: 900,  name: { en: 'Build', zh: '動手做' }, items: ['resume-generator', 'ado-to-word', 'ibm-ai'] },
+    { from: 900,  to: 1080, name: { en: 'Deliver', zh: '交付' }, items: ['hpe-sa', 'ibm-mes', 'systex', 'hpe-deploy'] },
+    { from: 1080, to: 1260, name: { en: 'Present', zh: '分享' }, items: ['hpe-stage', 'ibm-ttt', 'computex'] },
+    { from: 1260, to: 1440, name: { en: 'Road-trip planning', zh: '規劃旅行' }, items: ['roadtrip', 'sightseeing'] },
+  ],
+};
+
+// ============================================================
+// John Lo Island — Three.js clay-model portfolio island
+// ============================================================
+let THREE, OrbitControls, CSS2DRenderer, CSS2DObject, RoundedBoxGeometry, BGU, SimplexNoise;
+
+const $ = (s) => document.querySelector(s);
+const lsGet = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* storage blocked */ } };
+
+// ---------- language ----------
+let LANG = (() => {
+  try {
+    const q = new URLSearchParams(location.search).get('lang');
+    if (q === 'zh' || q === 'en') return q;
+  } catch (e) { /* no query */ }
+  if (location.hash === '#zh') return 'zh';
+  if (location.hash === '#en') return 'en';
+  const s = lsGet('jli-lang');
+  return s === 'zh' ? 'zh' : 'en';
+})();
+const T = {
+  en: {
+    eyebrow: 'Portfolio island', brandSub: 'Career, projects and interests as a small island.',
+    overview: 'Overview', list: 'List', tabTopics: 'Islands', tabFlows: 'Skill flows', log: 'Island log', time: 'Time',
+    morning: 'Morning', day: 'Day', dusk: 'Dusk', night: 'Night', names: 'Names', carriers: 'Carriers', flows: 'Flows',
+    pause: 'Pause', bird: 'Top view', logShort: 'Log', helpEyebrow: 'How to explore', helpTitle: 'Welcome to the island',
+    help1: 'Drag to orbit, scroll or pinch to zoom.',
+    help2: 'Tap an island or a building to open its card. Each island is one part of my career.',
+    help3: 'Use the bar at the bottom to change the time of day, and turn on Flows to see how skills travel between islands.',
+    helpGo: 'Start exploring', loading: 'Assembling the island…', search: 'Search islands, projects, skills',
+    onIsland: 'On this island', skills: 'Skills', flowsHere: 'Skill flows', openSite: 'Open on johnlo.cloud',
+    island: 'Island', skillFlow: 'Skill flow', carrier: 'Who walks it', allFlows: 'All flows',
+    noResults: 'Nothing matches. Try a skill such as SQL or Vue.', timeline: 'Timeline', tags: 'Tools & topics',
+    carrying: 'Carrying', loadErr: 'The 3D view could not start. Your browser may have WebGL turned off, or the 3D library could not load. Everything is still on johnlo.cloud.',
+    arrive: 'arrive', depart: 'depart', handoff: 'handoff',
+    evArrive: '{role} brought {cargo} to {island}', evDepart: '{role} left {island} with {cargo}', evHandoff: '{role} handed off {cargo} at {island}',
+    legendTitle: 'Line style', openIsland: 'Island overview', close: 'Close', items: 'items', fromTo: 'Route',
+  },
+  zh: {
+    eyebrow: '作品集小島', brandSub: '把經歷、專案和興趣做成一座小島。',
+    overview: '全景', list: '清單', tabTopics: '島嶼', tabFlows: '技能流', log: '島嶼日誌', time: '時間',
+    morning: '清晨', day: '白天', dusk: '黃昏', night: '夜晚', names: '名牌', carriers: '搬運', flows: '技能流',
+    pause: '暫停', bird: '鳥瞰', logShort: '日誌', helpEyebrow: '操作說明', helpTitle: '歡迎來到小島',
+    help1: '拖曳旋轉視角，滾輪或雙指縮放。',
+    help2: '點島嶼或建築打開資訊卡，每座島代表職涯的一個部分。',
+    help3: '用下方工具列切換時段，打開「技能流」看技能怎麼在島嶼之間流動。',
+    helpGo: '開始探索', loading: '正在組合小島…', search: '搜尋島嶼、專案、技能',
+    onIsland: '島上的建築', skills: '技能', flowsHere: '技能流', openSite: '在 johnlo.cloud 查看',
+    island: '島嶼', skillFlow: '技能流', carrier: '搬運的人', allFlows: '全部技能流',
+    noResults: '找不到符合的項目，試試 SQL 或 Vue 這類技能。', timeline: '時間軸', tags: '工具與主題',
+    carrying: '正在搬', loadErr: '3D 畫面無法啟動，可能是瀏覽器關閉了 WebGL，或 3D 函式庫載入失敗。完整內容仍可在 johnlo.cloud 查看。',
+    arrive: '抵達', depart: '出發', handoff: '交接',
+    evArrive: '{role}把{cargo}送到{island}', evDepart: '{role}帶著{cargo}離開{island}', evHandoff: '{role}在{island}交接{cargo}',
+    legendTitle: '線條樣式', openIsland: '島嶼總覽', close: '關閉', items: '項', fromTo: '路線',
+  },
+};
+const t = (k) => (T[LANG][k] ?? T.en[k] ?? k);
+const tr = (o) => (o == null ? '' : typeof o === 'string' ? o : (o[LANG] ?? o.en));
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const EMBED_HOST = /(^|\.)johnlo\.cloud$|^localhost$|^127\.0\.0\.1$/.test(location.hostname);
+const tgt = (url) => (EMBED_HOST && /^https:\/\/johnlo\.cloud\//.test(url) ? '_top' : '_blank');
+const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (_, k) => o[k] ?? '');
+
+// ---------- deterministic random ----------
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+// ---------- world constants ----------
+const R = 2.02, SPACING = 2.28, TOP = 0.65, WATER_Y = -0.18, PATH_R = 1.68;
+const SQ3 = Math.sqrt(3);
+const isMobile = matchMedia('(max-width: 800px)').matches;
+const PAL = { coral: '#cf4f3d', red: '#c5050c', ink: '#2b2424', cream: '#fff8f4', yellow: '#fcea8b', stone: '#c5b5a7', green: '#71806a', glass: '#86a8a6', wood: '#b48560', teal: '#3e7c8c', wall: '#f4ebdd', eave: '#a34e34', win: '#a8c4c2', p1: '#9cc27a', p2: '#8db86f', p3: '#728f5f', pink: '#f2b5c6', aqua: '#58a6a6', blue: '#6f7fb5', gold: '#e8b84a', white: '#ffffff', grey: '#9a948f', dark: '#3d3a40', skin: '#f1c9a5', sand: '#e8d6a8', brick: '#c9785a' };
+const PASTELS = [PAL.pink, PAL.aqua, PAL.blue, '#f0c27a', '#9cc27a'];
+
+const state = {
+  minutes: 600, paused: false, rm: matchMedia('(prefers-reduced-motion: reduce)').matches,
+  names: false, walkers: true, flowsAll: false, bird: false, log: false,
+  sel: null, segIdx: -1, time: 0, tab: 'topics', query: '', logFilter: 'all',
+};
+
+let renderer, labelRenderer, scene, camera, controls, raycaster;
+let sun, fill, hemi, skyMat, waterMat, glowMat, solidMat, poolMesh, mountainMeshes = [], cloudMesh, boats = [];
+let center;
+let dirty = true, flight = null;
+const ISL = {}; const ISL_LIST = []; const ITEMS = {}; const OWN = {};
+const topMeshes = []; let mainKit, smallKit;
+const GEO = {}; const COL = {};
+const col = (hex) => (COL[hex] ||= new THREE.Color(hex));
+
+// ============================================================
+// boot
+// ============================================================
+async function boot() {
+  try {
+    const [three, oc, css, rbg, bgu, sn] = await Promise.all([
+      import('three'),
+      import('three/addons/controls/OrbitControls.js'),
+      import('three/addons/renderers/CSS2DRenderer.js'),
+      import('three/addons/geometries/RoundedBoxGeometry.js'),
+      import('three/addons/utils/BufferGeometryUtils.js'),
+      import('three/addons/math/SimplexNoise.js'),
+    ]);
+    THREE = three; OrbitControls = oc.OrbitControls; CSS2DRenderer = css.CSS2DRenderer; CSS2DObject = css.CSS2DObject;
+    RoundedBoxGeometry = rbg.RoundedBoxGeometry; BGU = bgu; SimplexNoise = sn.SimplexNoise;
+    const probe = document.createElement('canvas');
+    if (!(probe.getContext('webgl2') || probe.getContext('webgl'))) throw new Error('WebGL unavailable');
+    main();
+    requestAnimationFrame(() => { $('#loading').classList.add('done'); });
+    if (!lsGet('jli-help')) openHelp();
+  } catch (err) {
+    console.error(err);
+    const e = $('#loadErr'); e.hidden = false; e.textContent = t('loadErr');
+    const a = document.createElement('a'); a.href = 'https://johnlo.cloud/'; a.target = '_blank'; a.rel = 'noopener'; a.textContent = ' johnlo.cloud ↗';
+    e.appendChild(a);
+  }
+}
+
+function main() {
+  applyStaticI18n();
+  initGeo();
+  layoutIslands();
+  initRenderer();
+  initEnvironment();
+  buildIslands();
+  buildBridgesAndGraph();
+  buildItems();
+  buildIslandDecor();
+  mainKit.build(scene, { cast: true });
+  smallKit.build(scene, { cast: false });
+  buildTerrain();
+  buildBackdrop();
+  buildLabels();
+  buildFlows();
+  buildWalkers();
+  initUI();
+  overview(true);
+  applyDay(state.minutes, true);
+  requestAnimationFrame(loop);
+}
+
+// ============================================================
+// geometry kit
+// ============================================================
+function initGeo() {
+  GEO.box = new THREE.BoxGeometry(1, 1, 1);
+  GEO.rbox = new RoundedBoxGeometry(1, 1, 1, 2, 0.12);
+  GEO.cylinder = new THREE.CylinderGeometry(0.5, 0.5, 1, 14);
+  GEO.cone = new THREE.ConeGeometry(0.5, 1, 14);
+  GEO.sphere = new THREE.SphereGeometry(0.5, 16, 12);
+  GEO.ico = new THREE.IcosahedronGeometry(0.5, 1);
+  GEO.dome = new THREE.SphereGeometry(0.5, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2).translate(0, -0.25, 0).scale(1, 2, 1);
+  GEO.torus = new THREE.TorusGeometry(0.5, 0.12, 8, 24);
+  const tri = new THREE.Shape([new THREE.Vector2(-0.5, -0.5), new THREE.Vector2(0.5, -0.5), new THREE.Vector2(0, 0.5)]);
+  GEO.prism = new THREE.ExtrudeGeometry(tri, { depth: 1, bevelEnabled: false }).translate(0, 0, -0.5);
+  GEO.hip = new THREE.ConeGeometry(Math.SQRT1_2, 1, 4).rotateY(Math.PI / 4);
+  GEO.glowbox = GEO.box;
+  GEO.glowsphere = new THREE.SphereGeometry(0.5, 10, 8);
+}
+
+class Kit {
+  constructor() { this.parts = []; this.meshes = []; }
+  push(kind, m, c, owner) { this.parts.push({ kind, m, c, owner }); }
+  build(sc, { cast = true } = {}) {
+    const by = {};
+    for (const p of this.parts) (by[p.kind] ||= []).push(p);
+    for (const kind in by) {
+      const arr = by[kind]; const glow = kind.startsWith('glow');
+      const mesh = new THREE.InstancedMesh(GEO[kind], glow ? glowMat : solidMat, arr.length);
+      mesh.castShadow = cast && !glow; mesh.receiveShadow = !glow;
+      mesh.userData.owners = []; mesh.userData.kit = this;
+      arr.forEach((p, i) => {
+        mesh.setMatrixAt(i, p.m); mesh.setColorAt(i, p.c);
+        mesh.userData.owners[i] = p.owner; p.mesh = mesh; p.i = i;
+        if (p.owner) (OWN[p.owner] ||= []).push(p);
+      });
+      mesh.instanceMatrix.needsUpdate = true; mesh.instanceColor.needsUpdate = true;
+      mesh.computeBoundingSphere();
+      sc.add(mesh); this.meshes.push(mesh);
+    }
+  }
+}
+
+// P(kind, x,y,z, sx,sy,sz, color, ry, rx, rz) places a part in a base frame
+function makeP(kit, base, owner, rnd, out) {
+  const e = new THREE.Euler(), q = new THREE.Quaternion(), v = new THREE.Vector3(), s = new THREE.Vector3();
+  return (kind, x, y, z, sx, sy, sz, color, ry = 0, rx = 0, rz = 0) => {
+    e.set(rx, ry, rz); q.setFromEuler(e);
+    const j = 1 + (rnd() * 2 - 1) * 0.0072;
+    v.set(x, y, z); s.set(sx * j, sy * j, sz * j);
+    const local = new THREE.Matrix4().compose(v, q, s);
+    kit.push(kind, base.clone().multiply(local), col(color), owner);
+    if (out) out.push({ kind, m: local, c: col(color), top: y + sy / 2 });
+  };
+}
+const sub = (P, ox, oz, s) => (k, x, y, z, sx, sy, sz, c, ry, rx, rz) => P(k, ox + x * s, y * s, oz + z * s, sx * s, sy * s, sz * s, c, ry, rx, rz);
+function person(P, x, z, shirt, ry = 0, s = 1, yb = 0) {
+  P('cylinder', x, yb + 0.09 * s, z, 0.1 * s, 0.13 * s, 0.1 * s, shirt, ry);
+  P('sphere', x, yb + 0.21 * s, z, 0.13 * s, 0.13 * s, 0.13 * s, PAL.skin);
+  P('dome', x, yb + 0.25 * s, z, 0.135 * s, 0.07 * s, 0.135 * s, '#3a2a22');
+}
+
+// ---------- building archetypes (unit space: base ±0.5, height 0–1.5) ----------
+const MODELS = {
+  townhall(P, a) {
+    P('rbox', 0, 0.05, 0, 1, 0.1, 0.86, PAL.stone);
+    P('box', 0, 0.4, 0.02, 0.86, 0.6, 0.56, PAL.wall);
+    for (const x of [-0.3, -0.1, 0.1, 0.3]) P('cylinder', x, 0.4, 0.34, 0.07, 0.6, 0.07, PAL.cream);
+    P('box', 0, 0.73, 0.06, 0.94, 0.06, 0.66, PAL.cream);
+    P('prism', 0, 0.86, 0.06, 0.66, 0.2, 0.94, PAL.coral, Math.PI / 2);
+    P('glowbox', -0.2, 0.46, 0.305, 0.1, 0.16, 0.02, PAL.win); P('glowbox', 0.2, 0.46, 0.305, 0.1, 0.16, 0.02, PAL.win);
+    P('box', 0, 0.24, 0.305, 0.14, 0.24, 0.02, PAL.eave);
+    P('box', 0, 0.98, -0.12, 0.32, 0.66, 0.32, PAL.wall);
+    P('cylinder', 0, 1.1, 0.045, 0.2, 0.02, 0.2, PAL.cream, 0, Math.PI / 2);
+    P('box', 0, 1.13, 0.058, 0.02, 0.08, 0.01, PAL.ink); P('box', 0.02, 1.1, 0.058, 0.06, 0.015, 0.01, PAL.ink);
+    P('box', 0, 1.33, -0.12, 0.38, 0.05, 0.38, PAL.eave);
+    P('hip', 0, 1.46, -0.12, 0.38, 0.22, 0.38, PAL.coral);
+    P('cylinder', 0.4, 0.75, 0.32, 0.015, 0.5, 0.015, PAL.ink); P('box', 0.46, 0.94, 0.32, 0.12, 0.08, 0.01, a);
+  },
+  tower(P, a) {
+    for (let i = 0; i < 5; i++) { const y = 0.13 + i * 0.23; P('rbox', 0, y, 0, 0.66, 0.2, 0.56, PAL.cream); P('glowbox', 0, y + 0.01, 0, 0.68, 0.07, 0.58, PAL.win); }
+    P('box', 0, 1.1, 0, 0.7, 0.05, 0.6, PAL.ink);
+    P('box', 0, 1.24, 0, 0.5, 0.2, 0.08, a);
+    P('cylinder', 0.24, 1.3, -0.18, 0.02, 0.36, 0.02, PAL.grey); P('glowsphere', 0.24, 1.49, -0.18, 0.05, 0.05, 0.05, '#ff9a8a');
+    P('box', 0, 0.08, 0.31, 0.3, 0.14, 0.06, PAL.glass);
+  },
+  tower2(P, a) {
+    P('rbox', 0, 0.03, 0, 0.9, 0.06, 0.8, PAL.stone);
+    P('rbox', 0, 0.6, -0.05, 0.62, 1.1, 0.5, PAL.glass);
+    for (let i = 0; i < 5; i++) P('glowbox', 0, 0.22 + i * 0.2, -0.05, 0.64, 0.04, 0.52, PAL.win);
+    P('box', 0, 1.18, -0.05, 0.66, 0.06, 0.54, PAL.cream);
+    P('box', 0, 1.3, -0.05, 0.4, 0.16, 0.05, a);
+    P('box', 0.32, 0.22, 0.33, 0.2, 0.3, 0.03, PAL.dark, -0.4); P('glowbox', 0.32, 0.23, 0.345, 0.16, 0.24, 0.01, PAL.win, -0.4);
+  },
+  factory(P, a) {
+    P('rbox', 0, 0.03, 0, 1, 0.06, 0.9, PAL.stone);
+    P('box', 0, 0.28, 0, 0.9, 0.44, 0.66, PAL.wall);
+    for (const x of [-0.3, 0, 0.3]) P('prism', x, 0.6, 0, 0.3, 0.2, 0.66, PAL.coral);
+    for (const x of [-0.3, 0.3]) P('glowbox', x, 0.3, 0.335, 0.18, 0.14, 0.02, PAL.win);
+    P('box', 0, 0.2, 0.335, 0.16, 0.28, 0.02, PAL.eave);
+    P('cylinder', 0.34, 0.85, -0.22, 0.12, 0.8, 0.12, PAL.cream); P('cylinder', 0.34, 1.1, -0.22, 0.13, 0.06, 0.13, a);
+    P('cylinder', 0.17, 0.75, -0.22, 0.09, 0.6, 0.09, PAL.cream);
+    P('cylinder', -0.32, 0.075, 0.42, 0.18, 0.03, 0.18, '#c9d4dc');
+  },
+  factory2(P, a) {
+    P('rbox', 0, 0.03, 0, 1, 0.06, 0.9, PAL.stone);
+    P('box', -0.15, 0.28, -0.12, 0.62, 0.44, 0.56, PAL.wall);
+    for (const x of [-0.3, 0]) P('prism', x, 0.6, -0.12, 0.3, 0.2, 0.56, PAL.coral);
+    P('box', -0.15, 0.46, 0.165, 0.62, 0.05, 0.01, a);
+    P('glowbox', -0.3, 0.28, 0.165, 0.18, 0.14, 0.02, PAL.win);
+    P('box', 0.1, 0.11, 0.3, 0.7, 0.05, 0.16, PAL.ink);
+    for (const x of [-0.15, 0.35]) P('box', x, 0.05, 0.3, 0.04, 0.08, 0.12, PAL.grey);
+    for (const x of [-0.05, 0.15, 0.35]) P('rbox', x, 0.18, 0.3, 0.1, 0.08, 0.1, PAL.wood);
+    P('box', 0.36, 0.3, -0.12, 0.04, 0.4, 0.04, PAL.grey); P('box', 0.36, 0.52, -0.12, 0.24, 0.16, 0.04, PAL.dark); P('glowbox', 0.36, 0.52, -0.1, 0.2, 0.12, 0.01, PAL.win);
+  },
+  stage(P, a) {
+    P('rbox', 0, 0.08, -0.08, 0.96, 0.16, 0.62, PAL.wood);
+    P('box', 0, 0.6, -0.36, 0.9, 0.84, 0.05, a);
+    P('glowbox', 0, 0.68, -0.33, 0.6, 0.34, 0.02, PAL.win);
+    for (const x of [-0.46, 0.46]) P('cylinder', x, 0.58, -0.12, 0.04, 1.0, 0.04, PAL.ink);
+    P('box', 0, 1.08, -0.12, 0.96, 0.05, 0.05, PAL.ink);
+    for (const x of [-0.25, 0, 0.25]) P('glowsphere', x, 1.02, -0.1, 0.07, 0.07, 0.07, PAL.yellow);
+    P('box', 0.28, 0.3, 0.02, 0.16, 0.22, 0.12, PAL.cream);
+    person(P, 0.08, -0.05, PAL.blue, 0, 1, 0.16);
+    [-0.33, -0.11, 0.11, 0.33].forEach((x, i) => person(P, x, 0.4, PASTELS[i], Math.PI, 0.9));
+  },
+  lab(P, a) {
+    P('rbox', 0, 0.03, 0, 1, 0.06, 0.9, PAL.stone);
+    P('box', 0, 0.32, -0.14, 0.9, 0.56, 0.46, PAL.wall);
+    P('box', 0, 0.62, 0.04, 0.96, 0.05, 0.86, PAL.cream);
+    for (const x of [-0.44, 0.44]) P('cylinder', x, 0.33, 0.42, 0.04, 0.56, 0.04, PAL.ink);
+    for (const x of [-0.28, 0, 0.28]) {
+      P('box', x, 0.3, 0.18, 0.18, 0.48, 0.16, PAL.dark);
+      for (let k = 0; k < 4; k++) P('glowbox', x - 0.04, 0.12 + k * 0.1, 0.265, 0.05, 0.02, 0.01, '#9fe8c0');
+    }
+    P('box', 0, 0.58, 0.095, 0.9, 0.04, 0.01, a);
+    P('cylinder', 0.25, 0.69, -0.15, 0.03, 0.08, 0.03, PAL.grey); P('dome', 0.25, 0.78, -0.15, 0.26, 0.12, 0.26, PAL.cream, 0, -0.6);
+  },
+  coins(P, a) {
+    P('rbox', 0, 0.03, 0, 1, 0.06, 0.9, PAL.stone);
+    [[-0.3, 0.25, 4], [0, 0.3, 6], [0.3, 0.25, 8]].forEach(([x, z, n]) => { for (let k = 0; k < n; k++) P('cylinder', x, 0.09 + k * 0.065, z, 0.24, 0.06, 0.24, PAL.gold); });
+    P('cylinder', 0, 0.75, -0.2, 0.62, 0.08, 0.62, PAL.gold, 0, Math.PI / 2);
+    P('cylinder', 0, 0.75, -0.155, 0.46, 0.02, 0.46, '#f3cf6a', 0, Math.PI / 2);
+    P('box', 0, 0.75, -0.14, 0.06, 0.3, 0.01, a); P('box', 0, 0.75, -0.14, 0.22, 0.05, 0.01, a);
+  },
+  clock(P, a) {
+    P('cylinder', 0, 0.06, 0, 0.8, 0.12, 0.8, PAL.stone);
+    P('box', 0, 0.24, -0.04, 0.16, 0.26, 0.16, PAL.cream);
+    P('cylinder', 0, 0.82, 0, 1.0, 0.12, 1.0, PAL.cream, 0, Math.PI / 2);
+    P('torus', 0, 0.82, 0, 1.0, 1.0, 0.7, a);
+    for (let k = 0; k < 12; k++) { const g = k * Math.PI / 6; P('box', Math.sin(g) * 0.4, 0.82 + Math.cos(g) * 0.4, 0.065, 0.03, k % 3 ? 0.05 : 0.09, 0.02, PAL.ink, 0, 0, -g); }
+    P('box', 0, 0.92, 0.075, 0.04, 0.24, 0.02, PAL.ink); P('box', 0.09, 0.82, 0.075, 0.2, 0.035, 0.02, PAL.ink);
+    P('cylinder', 0, 0.82, 0.08, 0.06, 0.02, 0.06, PAL.red, 0, Math.PI / 2);
+  },
+  antenna(P, a) {
+    P('rbox', 0, 0.04, 0, 0.7, 0.08, 0.7, PAL.stone);
+    P('box', 0, 0.62, 0, 0.06, 1.12, 0.06, PAL.grey);
+    [[0.3, 0.42], [0.62, 0.3], [0.94, 0.2]].forEach(([y, s]) => P('torus', 0, y, 0, s, s, 0.5, a, 0, Math.PI / 2));
+    P('cylinder', 0, 1.2, 0, 0.18, 0.04, 0.18, PAL.white);
+    P('glowsphere', 0, 1.26, 0, 0.06, 0.06, 0.06, '#9fe8c0');
+    [[-0.22, 1.3, 0.3], [0, 1.36, 0.38], [0.22, 1.3, 0.3]].forEach(([x, y, s]) => P('sphere', x, y, -0.05, s, s * 0.8, s, PAL.white));
+  },
+  bank(P, a) {
+    P('rbox', 0, 0.04, 0.05, 1, 0.08, 0.86, PAL.stone);
+    P('box', 0, 0.11, 0.08, 0.9, 0.06, 0.76, PAL.cream);
+    P('box', 0, 0.42, -0.08, 0.8, 0.56, 0.5, PAL.wall);
+    for (let i = 0; i < 5; i++) P('cylinder', -0.32 + i * 0.16, 0.44, 0.27, 0.07, 0.6, 0.07, PAL.cream);
+    P('box', 0, 0.77, 0.05, 0.9, 0.08, 0.74, PAL.cream);
+    P('box', 0, 0.77, 0.425, 0.9, 0.03, 0.01, a);
+    P('prism', 0, 0.92, 0.05, 0.74, 0.22, 0.9, PAL.stone, Math.PI / 2);
+    P('glowbox', 0, 0.36, 0.175, 0.16, 0.3, 0.02, PAL.win);
+  },
+  billboard(P, a) {
+    P('rbox', 0, 0.03, 0, 1, 0.06, 0.8, PAL.stone);
+    for (const x of [-0.3, 0.3]) P('cylinder', x, 0.45, -0.1, 0.05, 0.9, 0.05, PAL.ink);
+    P('rbox', 0, 0.92, -0.1, 0.96, 0.62, 0.08, PAL.cream);
+    [0.18, 0.28, 0.22, 0.42].forEach((h, i) => P('box', -0.3 + i * 0.2, 0.67 + h / 2, -0.05, 0.12, h, 0.02, i === 3 ? a : PAL.aqua));
+    P('box', 0, 0.66, -0.05, 0.8, 0.015, 0.02, PAL.ink);
+    person(P, 0.3, 0.3, PAL.blue, -0.6);
+  },
+  billboard2(P, a) {
+    P('rbox', 0, 0.03, 0, 1, 0.06, 0.8, PAL.stone);
+    for (const x of [-0.3, 0.3]) P('cylinder', x, 0.5, -0.2, 0.05, 1.0, 0.05, PAL.ink);
+    P('rbox', 0, 0.98, -0.2, 0.96, 0.6, 0.08, PAL.cream);
+    const pts = [[-0.36, 0.78], [-0.18, 0.88], [0, 0.84], [0.18, 1.02], [0.36, 1.12]];
+    pts.forEach(([x, y], i) => {
+      P('sphere', x, y, -0.15, 0.05, 0.05, 0.05, a);
+      if (i) { const [px, py] = pts[i - 1]; const dx = x - px, dy = y - py; P('box', (x + px) / 2, (y + py) / 2, -0.15, Math.hypot(dx, dy), 0.02, 0.02, a, 0, 0, Math.atan2(dy, dx)); }
+    });
+    P('box', -0.2, 0.22, 0.25, 0.4, 0.04, 0.22, PAL.wood); P('box', -0.2, 0.1, 0.25, 0.34, 0.2, 0.16, PAL.grey);
+    P('box', -0.2, 0.36, 0.2, 0.26, 0.16, 0.02, PAL.dark); P('glowbox', -0.2, 0.36, 0.212, 0.22, 0.12, 0.005, PAL.win);
+    person(P, 0.25, 0.3, PAL.pink, Math.PI * 0.85);
+  },
+  booth(P, a) {
+    P('rbox', 0, 0.03, 0, 1, 0.06, 0.86, PAL.stone);
+    P('box', 0, 0.21, 0.12, 0.8, 0.3, 0.22, PAL.wood); P('box', 0, 0.37, 0.12, 0.84, 0.03, 0.26, PAL.cream);
+    for (const x of [-0.42, 0.42]) for (const z of [-0.3, 0.26]) P('cylinder', x, 0.46, z, 0.035, 0.86, 0.035, PAL.ink);
+    for (let i = 0; i < 6; i++) P('box', -0.35 + i * 0.14, 0.92, -0.02, 0.14, 0.04, 0.7, i % 2 ? PAL.cream : a, 0, -0.18);
+    P('box', 0, 0.55, -0.3, 0.84, 0.66, 0.04, PAL.cream); P('glowbox', 0, 0.6, -0.275, 0.5, 0.3, 0.01, PAL.win);
+    for (const x of [-0.2, 0.18]) P('box', x, 0.4, 0.12, 0.16, 0.012, 0.1, PAL.grey);
+    person(P, -0.18, 0.42, PAL.aqua, Math.PI, 0.9); person(P, 0.18, 0.42, PAL.yellow, Math.PI, 0.9);
+  },
+  robot(P, a) {
+    P('cylinder', 0, 0.04, 0, 0.7, 0.08, 0.7, PAL.stone);
+    for (const x of [-0.1, 0.1]) P('box', x, 0.2, 0, 0.1, 0.24, 0.12, PAL.grey);
+    P('rbox', 0, 0.52, 0, 0.5, 0.44, 0.38, PAL.cream);
+    P('box', 0, 0.55, 0.195, 0.24, 0.14, 0.02, a);
+    for (const x of [-0.06, 0, 0.06]) P('glowbox', x, 0.52, 0.207, 0.03, 0.03, 0.01, '#9fe8c0');
+    for (const s of [-1, 1]) { P('cylinder', s * 0.31, 0.55, 0, 0.08, 0.34, 0.08, PAL.grey, 0, 0, s * 0.3); P('sphere', s * 0.36, 0.38, 0, 0.1, 0.1, 0.1, a); }
+    P('rbox', 0, 0.96, 0, 0.42, 0.32, 0.34, PAL.cream);
+    P('box', 0, 0.97, 0.172, 0.34, 0.14, 0.02, PAL.dark);
+    for (const x of [-0.08, 0.08]) P('glowsphere', x, 0.97, 0.182, 0.07, 0.07, 0.03, '#9fe8ff');
+    P('cylinder', 0, 1.18, 0, 0.03, 0.14, 0.03, PAL.grey); P('sphere', 0, 1.28, 0, 0.09, 0.09, 0.09, a);
+  },
+  robot2(P, a) {
+    MODELS.robot(sub(P, -0.2, 0, 0.75), a);
+    for (let k = 0; k < 5; k++) P('box', 0.3, 0.05 + k * 0.025, 0.2, 0.28, 0.02, 0.34, PAL.white, k * 0.05);
+    P('box', 0.3, 0.55, -0.18, 0.34, 0.46, 0.02, PAL.white);
+    P('box', 0.3, 0.72, -0.168, 0.22, 0.04, 0.005, a);
+    for (let k = 0; k < 4; k++) P('box', 0.3, 0.62 - k * 0.07, -0.168, 0.24, 0.018, 0.005, PAL.grey);
+    P('box', 0.3, 0.27, -0.18, 0.04, 0.2, 0.04, PAL.ink);
+  },
+  book(P, a) {
+    P('rbox', 0, 0.04, 0, 0.9, 0.08, 0.7, PAL.stone);
+    P('box', 0, 0.3, -0.05, 0.22, 0.44, 0.2, PAL.wood);
+    for (const s of [-1, 1]) {
+      P('box', s * 0.24, 0.6, 0, 0.5, 0.04, 0.66, a, 0, 0.5, -s * 0.18);
+      P('box', s * 0.23, 0.635, 0.012, 0.46, 0.04, 0.6, PAL.cream, 0, 0.5, -s * 0.18);
+    }
+    P('box', 0.02, 0.5, 0.3, 0.03, 0.24, 0.01, PAL.red, 0, 0.5);
+  },
+  book2(P, a) {
+    P('rbox', 0, 0.08, 0, 0.8, 0.14, 0.6, PAL.blue);
+    P('rbox', 0.03, 0.22, 0, 0.72, 0.14, 0.56, PAL.coral, 0.1);
+    P('rbox', -0.02, 0.36, 0, 0.66, 0.14, 0.52, PAL.aqua, -0.08);
+    for (const [y, w, d, r] of [[0.08, 0.78, 0.5, 0], [0.22, 0.7, 0.46, 0.1], [0.36, 0.64, 0.42, -0.08]]) P('box', 0, y, 0.05, w, 0.1, d, PAL.cream, r);
+    P('cylinder', 0, 0.48, 0, 0.3, 0.1, 0.3, PAL.ink);
+    P('box', 0, 0.54, 0, 0.56, 0.035, 0.56, PAL.ink, 0.4);
+    P('cylinder', 0.22, 0.45, 0.1, 0.015, 0.16, 0.015, PAL.gold); P('sphere', 0.22, 0.36, 0.1, 0.04, 0.04, 0.04, PAL.gold);
+  },
+  printer(P, a) {
+    P('rbox', 0, 0.03, 0, 1, 0.06, 0.86, PAL.stone);
+    P('rbox', -0.12, 0.3, 0.02, 0.56, 0.44, 0.5, PAL.cream);
+    P('box', -0.12, 0.43, 0.275, 0.4, 0.04, 0.02, PAL.ink);
+    P('glowbox', -0.3, 0.3, 0.275, 0.1, 0.06, 0.01, '#9fe8c0');
+    P('box', 0.3, 0.16, 0.12, 0.3, 0.03, 0.36, PAL.grey);
+    for (let k = 0; k < 4; k++) P('box', 0.3, 0.19 + k * 0.02, 0.12, 0.24, 0.015, 0.3, PAL.white, k * 0.06);
+    P('box', 0.28, 0.75, -0.25, 0.36, 0.5, 0.03, PAL.white);
+    for (let k = 0; k < 5; k++) P('box', 0.28, 0.9 - k * 0.08, -0.23, 0.24, 0.025, 0.01, k ? '#2b579a' : a);
+    for (const [x, y, s] of [[-0.3, 0.72, 0.24], [-0.12, 0.76, 0.3], [0.03, 0.71, 0.2]]) P('sphere', x, y, -0.2, s, s * 0.8, s, '#d8ecf2');
+  },
+  gears(P, a) {
+    P('rbox', 0, 0.03, 0, 1, 0.06, 0.86, PAL.stone);
+    const gear = (x, y, z, r, c) => {
+      P('cylinder', x, y, z, r * 2, 0.12, r * 2, c, 0, Math.PI / 2);
+      for (let k = 0; k < 10; k++) { const g = k * Math.PI / 5; P('box', x + Math.cos(g) * r * 1.05, y + Math.sin(g) * r * 1.05, z, r * 0.32, r * 0.32, 0.12, c, 0, 0, g); }
+      P('cylinder', x, y, z + 0.02, r * 0.5, 0.14, r * 0.5, a, 0, Math.PI / 2);
+    };
+    gear(-0.14, 0.58, -0.1, 0.32, PAL.stone); gear(0.28, 0.33, 0.0, 0.2, PAL.teal);
+    P('rbox', 0.1, 0.1, 0.3, 0.6, 0.08, 0.22, PAL.dark);
+    for (let k = 0; k < 6; k++) P('glowbox', -0.12 + k * 0.08, 0.1, 0.412, 0.04, 0.02, 0.01, '#9fe8c0');
+  },
+  cloudstack(P, a) {
+    P('rbox', 0, 0.03, 0, 1, 0.06, 0.86, PAL.stone);
+    P('rbox', 0, 0.36, -0.05, 0.34, 0.6, 0.34, PAL.dark);
+    for (let k = 0; k < 5; k++) P('glowbox', 0, 0.16 + k * 0.1, 0.125, 0.24, 0.02, 0.01, '#9fe8ff');
+    for (const [x, y, z, s] of [[-0.25, 0.95, -0.05, 0.36], [0, 1.05, -0.05, 0.46], [0.25, 0.95, -0.05, 0.36], [0, 0.9, 0.12, 0.3]]) P('sphere', x, y, z, s, s * 0.82, s, PAL.white);
+    P('box', 0.36, 0.33, 0.25, 0.06, 0.26, 0.06, a); P('cone', 0.36, 0.53, 0.25, 0.16, 0.16, 0.16, a);
+    P('sphere', -0.32, 0.26, 0.27, 0.28, 0.28, 0.28, PAL.aqua); P('torus', -0.32, 0.26, 0.27, 0.34, 0.34, 0.4, PAL.cream, 0, Math.PI / 2);
+  },
+  field(P, a) {
+    P('box', 0, 0.04, 0, 1, 0.06, 0.74, '#7fb069');
+    const w = PAL.white;
+    P('box', 0, 0.075, 0.34, 0.94, 0.005, 0.02, w); P('box', 0, 0.075, -0.34, 0.94, 0.005, 0.02, w);
+    P('box', 0.47, 0.075, 0, 0.02, 0.005, 0.7, w); P('box', -0.47, 0.075, 0, 0.02, 0.005, 0.7, w);
+    P('box', 0, 0.075, 0, 0.02, 0.005, 0.68, w); P('torus', 0, 0.075, 0, 0.24, 0.24, 0.1, w, 0, Math.PI / 2);
+    for (const s of [-1, 1]) { P('box', s * 0.46, 0.17, 0, 0.02, 0.02, 0.22, w); for (const z of [-0.1, 0.1]) P('box', s * 0.46, 0.12, z, 0.02, 0.1, 0.02, w); }
+    [[-0.25, 0.1, a], [-0.1, -0.15, a], [0.18, 0.12, PAL.blue], [0.3, -0.1, PAL.blue]].forEach(([x, z, c], i) => person(P, x, z, c, i < 2 ? Math.PI / 2 : -Math.PI / 2, 0.85, 0.07));
+    P('sphere', 0.03, 0.1, 0.02, 0.05, 0.05, 0.05, w);
+  },
+  park(P, a) {
+    P('cylinder', 0, 0.04, 0, 1, 0.08, 1, PAL.p1);
+    P('box', 0, 0.085, 0, 0.16, 0.01, 0.92, PAL.sand, 0.6);
+    P('cylinder', 0.22, 0.085, -0.14, 0.32, 0.01, 0.24, '#9fd3d8');
+    [[-0.25, -0.2, PAL.p3], [-0.3, 0.18, PAL.p2], [0.26, 0.24, PAL.p2]].forEach(([x, z, c]) => { P('cylinder', x, 0.2, z, 0.05, 0.24, 0.05, PAL.wood); P('ico', x, 0.42, z, 0.28, 0.28, 0.28, c); });
+    P('box', 0.0, 0.13, 0.32, 0.2, 0.03, 0.07, PAL.wood, 0.6);
+    P('box', 0.3, 0.25, -0.38, 0.03, 0.34, 0.03, PAL.ink);
+    P('box', 0.3, 0.45, -0.37, 0.26, 0.24, 0.02, PAL.cream);
+    [[-0.055, 0.055, PAL.red], [0.055, 0.055, PAL.yellow], [-0.055, -0.055, PAL.aqua], [0.055, -0.055, PAL.p2]].forEach(([dx, dy, c]) => P('box', 0.3 + dx, 0.45 + dy, -0.355, 0.1, 0.1, 0.01, c));
+  },
+  dome(P, a) {
+    P('rbox', 0, 0.04, 0.08, 1, 0.08, 0.8, PAL.stone);
+    P('box', 0, 0.33, -0.06, 0.92, 0.5, 0.54, PAL.wall);
+    for (let i = 0; i < 4; i++) P('cylinder', -0.18 + i * 0.12, 0.34, 0.3, 0.06, 0.5, 0.06, PAL.cream);
+    P('box', 0, 0.62, 0.1, 0.5, 0.06, 0.48, PAL.cream);
+    P('prism', 0, 0.74, 0.1, 0.5, 0.18, 0.48, PAL.cream);
+    for (const x of [-0.36, -0.27, 0.27, 0.36]) P('glowbox', x, 0.36, 0.215, 0.05, 0.14, 0.01, PAL.win);
+    P('cylinder', 0, 0.74, -0.1, 0.42, 0.24, 0.42, PAL.cream);
+    P('dome', 0, 1.02, -0.1, 0.44, 0.32, 0.44, '#8fb5a3');
+    P('cylinder', 0, 1.24, -0.1, 0.08, 0.12, 0.08, PAL.cream); P('cone', 0, 1.35, -0.1, 0.09, 0.1, 0.09, '#8fb5a3');
+    P('box', 0.36, 0.5, 0.225, 0.08, 0.22, 0.01, PAL.red);
+  },
+  classroom(P, a) {
+    P('rbox', 0, 0.03, 0, 1, 0.06, 0.9, PAL.wood);
+    P('box', 0, 0.36, -0.41, 0.96, 0.6, 0.06, PAL.wall);
+    P('box', 0, 0.42, -0.375, 0.66, 0.3, 0.02, '#2f4a3c');
+    P('box', -0.1, 0.48, -0.363, 0.3, 0.015, 0.005, PAL.white); P('box', 0.05, 0.42, -0.363, 0.36, 0.015, 0.005, PAL.white);
+    P('box', 0.0, 0.66, -0.375, 0.96, 0.05, 0.08, a);
+    for (const x of [-0.22, 0.22]) for (const z of [0.02, 0.3]) { P('box', x, 0.18, z, 0.24, 0.03, 0.14, PAL.wood); P('box', x, 0.09, z, 0.2, 0.15, 0.1, PAL.grey); }
+    [[-0.22, 0.14], [0.22, 0.14], [-0.22, 0.42], [0.22, 0.42]].forEach(([x, z], i) => person(P, x, z, PASTELS[i], Math.PI, 0.75, 0.03));
+    person(P, 0.32, -0.2, PAL.ink, 0, 0.9, 0.03);
+  },
+  school(P, a) {
+    P('rbox', 0, 0.03, 0.05, 1, 0.06, 0.86, PAL.stone);
+    P('box', 0, 0.32, -0.05, 0.9, 0.52, 0.5, PAL.brick);
+    for (const y of [0.24, 0.44]) for (const x of [-0.33, -0.19, 0.19, 0.33]) P('glowbox', x, y, 0.205, 0.08, 0.1, 0.01, PAL.win);
+    P('box', 0, 0.6, -0.05, 0.94, 0.05, 0.54, PAL.cream);
+    P('box', 0, 0.76, 0.02, 0.26, 0.44, 0.26, PAL.brick);
+    P('cylinder', 0, 0.8, 0.155, 0.14, 0.02, 0.14, PAL.cream, 0, Math.PI / 2);
+    P('hip', 0, 1.08, 0.02, 0.32, 0.2, 0.32, PAL.coral);
+    P('box', 0, 0.18, 0.205, 0.14, 0.24, 0.02, PAL.eave);
+    P('cylinder', 0.42, 0.62, 0.38, 0.015, 0.9, 0.015, PAL.ink); P('box', 0.48, 0.98, 0.38, 0.12, 0.08, 0.01, a);
+  },
+  school2(P, a) {
+    P('rbox', 0, 0.04, 0.05, 1, 0.08, 0.86, PAL.stone);
+    P('box', 0, 0.3, -0.05, 0.8, 0.42, 0.46, PAL.cream);
+    for (let i = 0; i < 4; i++) P('cylinder', -0.3 + i * 0.2, 0.3, 0.21, 0.05, 0.42, 0.05, '#b8473a');
+    P('glowbox', 0, 0.28, 0.185, 0.18, 0.22, 0.01, PAL.win);
+    P('hip', 0, 0.68, -0.05, 1.0, 0.3, 0.66, '#4f6f6a');
+    P('box', 0, 0.84, -0.05, 0.42, 0.04, 0.04, PAL.ink);
+    P('box', 0, 0.1, 0.36, 0.4, 0.06, 0.12, PAL.stone);
+  },
+  trophy(P, a) {
+    P('rbox', 0, 0.12, 0, 0.5, 0.24, 0.5, PAL.stone);
+    P('box', 0, 0.27, 0, 0.36, 0.06, 0.36, PAL.dark);
+    P('cylinder', 0, 0.35, 0, 0.24, 0.1, 0.24, PAL.gold);
+    P('cylinder', 0, 0.48, 0, 0.07, 0.18, 0.07, PAL.gold);
+    P('cone', 0, 0.76, 0, 0.46, 0.42, 0.46, PAL.gold, 0, Math.PI);
+    P('torus', 0, 0.96, 0, 0.46, 0.46, 0.3, PAL.gold, 0, Math.PI / 2);
+    for (const s of [-1, 1]) P('torus', s * 0.25, 0.78, 0, 0.2, 0.22, 0.5, PAL.gold);
+    P('box', 0, 0.12, 0.255, 0.3, 0.1, 0.01, a);
+  },
+  bulb(P, a) {
+    P('rbox', 0, 0.12, 0, 0.5, 0.24, 0.5, PAL.stone);
+    P('cylinder', 0, 0.34, 0, 0.22, 0.2, 0.22, PAL.grey);
+    for (const y of [0.29, 0.35, 0.41]) P('torus', 0, y, 0, 0.23, 0.23, 0.3, '#b7b0a8', 0, Math.PI / 2);
+    P('glowsphere', 0, 0.7, 0, 0.58, 0.62, 0.58, '#fff3c4');
+    for (let k = 0; k < 6; k++) { const g = k * Math.PI / 5 - Math.PI / 2 + 0.3; P('box', Math.cos(g) * 0.45, 0.72 + Math.sin(g + Math.PI) * -0.45, 0, 0.1, 0.03, 0.03, PAL.gold, 0, 0, g); }
+    [[-0.38, 0.2, PAL.yellow], [0.38, 0.24, PAL.pink], [0.36, 0.1, PAL.aqua]].forEach(([x, y, c]) => P('box', x, y, 0.3, 0.12, 0.12, 0.01, c));
+    P('box', 0, 0.12, 0.255, 0.3, 0.1, 0.01, a);
+  },
+  golf(P, a) {
+    P('cylinder', 0, 0.04, 0, 1, 0.08, 1, '#8fcf73');
+    P('cylinder', 0.1, 0.082, -0.08, 0.5, 0.01, 0.42, '#a6dc87');
+    P('sphere', -0.26, 0.07, 0.24, 0.34, 0.06, 0.24, PAL.sand);
+    P('cylinder', 0.15, 0.088, -0.1, 0.06, 0.01, 0.06, PAL.ink);
+    P('cylinder', 0.15, 0.4, -0.1, 0.02, 0.64, 0.02, PAL.white);
+    P('box', 0.24, 0.65, -0.1, 0.17, 0.11, 0.01, PAL.red);
+    P('sphere', -0.05, 0.11, 0.12, 0.05, 0.05, 0.05, PAL.white);
+    P('cylinder', 0.33, 0.22, 0.28, 0.1, 0.28, 0.1, PAL.blue);
+    for (const x of [0.31, 0.35]) P('cylinder', x, 0.42, 0.28, 0.012, 0.16, 0.012, PAL.grey);
+  },
+  court(P, a) {
+    P('rbox', 0, 0.03, 0, 1, 0.06, 0.9, PAL.stone);
+    P('box', 0, 0.07, 0, 0.9, 0.02, 0.62, '#4f9e8a');
+    for (const z of [-0.29, 0.29]) P('box', 0, 0.082, z, 0.86, 0.005, 0.015, PAL.white);
+    for (const x of [-0.43, 0.43, -0.2, 0.2]) P('box', x, 0.082, 0, 0.015, 0.005, 0.58, PAL.white);
+    P('box', 0, 0.2, 0, 0.02, 0.16, 0.62, PAL.white);
+    for (const z of [-0.32, 0.32]) P('cylinder', 0, 0.16, z, 0.025, 0.26, 0.025, PAL.ink);
+    P('cone', 0.2, 0.48, 0.05, 0.07, 0.09, 0.07, PAL.white, 0, 0, 2.5); P('sphere', 0.235, 0.455, 0.05, 0.035, 0.035, 0.035, PAL.cream);
+    P('torus', -0.25, 0.34, 0.2, 0.14, 0.18, 0.3, a); P('cylinder', -0.25, 0.18, 0.2, 0.02, 0.16, 0.02, PAL.ink);
+  },
+  car(P, a) {
+    P('box', 0, 0.03, 0.18, 1, 0.04, 0.34, '#5b5552');
+    for (const x of [-0.35, -0.1, 0.15, 0.4]) P('box', x, 0.052, 0.18, 0.12, 0.005, 0.025, PAL.yellow);
+    P('box', 0, 0.03, -0.17, 1, 0.04, 0.36, PAL.p2);
+    P('cone', -0.22, 0.42, -0.24, 0.5, 0.72, 0.5, '#8a9a8a'); P('cone', -0.22, 0.65, -0.24, 0.2, 0.26, 0.2, PAL.white);
+    P('cone', 0.2, 0.33, -0.28, 0.42, 0.56, 0.42, '#97a38f'); P('cone', 0.2, 0.53, -0.28, 0.15, 0.17, 0.15, PAL.white);
+    for (const x of [-0.42, 0.42]) P('cone', x, 0.18, -0.1, 0.12, 0.28, 0.12, PAL.p3);
+    P('rbox', 0.02, 0.15, 0.18, 0.44, 0.13, 0.24, PAL.coral);
+    P('rbox', -0.01, 0.26, 0.18, 0.26, 0.12, 0.22, PAL.cream);
+    P('box', -0.01, 0.27, 0.18, 0.27, 0.07, 0.225, PAL.win);
+    for (const x of [-0.13, 0.15]) for (const z of [0.07, 0.29]) P('cylinder', x, 0.08, z, 0.1, 0.04, 0.1, PAL.ink, 0, Math.PI / 2);
+    P('rbox', -0.01, 0.35, 0.18, 0.18, 0.06, 0.14, PAL.wood);
+  },
+  ferris(P, a) {
+    P('rbox', 0, 0.04, 0, 0.9, 0.08, 0.6, PAL.stone);
+    for (const s of [-1, 1]) for (const z of [-0.08, 0.08]) P('box', s * 0.17, 0.42, z, 0.04, 0.78, 0.04, PAL.ink, 0, 0, s * 0.42);
+    P('torus', 0, 0.8, 0, 0.9, 0.9, 0.35, a);
+    P('cylinder', 0, 0.8, 0, 0.08, 0.22, 0.08, PAL.ink, 0, Math.PI / 2);
+    for (let k = 0; k < 4; k++) P('box', 0, 0.8, 0, 0.86, 0.015, 0.015, PAL.cream, 0, 0, k * Math.PI / 4);
+    for (let k = 0; k < 8; k++) { const g = k * Math.PI / 4; P('rbox', Math.cos(g) * 0.45, 0.75 + Math.sin(g) * 0.45, 0, 0.11, 0.1, 0.12, PASTELS[k % 5]); }
+  },
+  house(P, a) {
+    P('box', 0, 0.03, 0, 0.92, 0.06, 0.84, PAL.p2);
+    P('box', 0, 0.31, -0.05, 0.66, 0.5, 0.54, PAL.wall);
+    P('box', 0, 0.58, -0.05, 0.76, 0.04, 0.64, PAL.eave);
+    P('hip', 0, 0.76, -0.05, 0.76, 0.32, 0.64, PAL.coral);
+    for (const x of [-0.18, 0.18]) P('glowbox', x, 0.36, 0.225, 0.12, 0.14, 0.02, PAL.win);
+    P('box', 0, 0.2, 0.225, 0.12, 0.24, 0.02, PAL.eave);
+    P('box', 0.2, 0.86, -0.18, 0.1, 0.26, 0.1, PAL.brick);
+    P('box', 0, 0.1, 0.38, 0.12, 0.02, 0.16, PAL.sand);
+    P('cylinder', -0.36, 0.2, 0.3, 0.04, 0.2, 0.04, PAL.wood); P('ico', -0.36, 0.36, 0.3, 0.22, 0.22, 0.22, PAL.p3);
+  },
+  globe(P, a) {
+    P('cylinder', 0, 0.06, 0, 0.5, 0.12, 0.5, PAL.wood);
+    P('cylinder', 0, 0.24, 0, 0.06, 0.26, 0.06, PAL.gold);
+    P('sphere', 0, 0.72, 0, 0.66, 0.66, 0.66, '#7fb9cf');
+    [[0.12, 0.86, 0.22, 0.26], [-0.2, 0.7, 0.2, 0.22], [0.15, 0.55, 0.24, 0.18], [-0.05, 0.98, 0.1, 0.16]].forEach(([x, y, z, s]) => P('ico', x, y, z, s, s * 0.7, s * 0.5, PAL.p2));
+    P('torus', 0, 0.72, 0, 0.8, 0.8, 0.4, PAL.gold, 0, 0, 0.4);
+    P('rbox', -0.38, 1.12, 0.1, 0.22, 0.16, 0.06, PAL.cream); P('rbox', 0.38, 1.18, 0.1, 0.22, 0.16, 0.06, a);
+  },
+  mailbox(P, a) {
+    P('box', 0, 0.03, 0, 0.8, 0.06, 0.7, PAL.p2);
+    P('box', 0, 0.3, 0, 0.08, 0.5, 0.08, PAL.wood);
+    P('rbox', 0, 0.62, 0, 0.28, 0.24, 0.44, a);
+    P('box', 0.16, 0.7, -0.06, 0.02, 0.18, 0.06, PAL.yellow);
+    P('box', -0.24, 0.98, 0.1, 0.22, 0.14, 0.02, PAL.white, 0.3); P('box', 0.22, 1.1, 0.05, 0.2, 0.13, 0.02, PAL.white, -0.3);
+    P('prism', -0.24, 1.0, 0.112, 0.2, 0.06, 0.005, PAL.stone, 0.3, Math.PI);
+    P('box', 0.3, 0.15, 0.22, 0.2, 0.2, 0.2, PAL.wood);
+  },
+  magnifier(P, a) {
+    P('rbox', 0, 0.03, 0, 1, 0.06, 0.86, PAL.stone);
+    P('box', -0.18, 0.22, 0, 0.5, 0.04, 0.4, PAL.wood); P('box', -0.18, 0.11, 0, 0.44, 0.18, 0.32, PAL.grey);
+    P('box', -0.18, 0.42, -0.14, 0.32, 0.36, 0.02, PAL.cream);
+    for (let k = 0; k < 3; k++) { P('box', -0.28, 0.52 - k * 0.1, -0.128, 0.04, 0.04, 0.005, '#2f8a57'); P('box', -0.13, 0.52 - k * 0.1, -0.128, 0.18, 0.02, 0.005, PAL.grey); }
+    P('dome', -0.3, 0.255, 0.1, 0.1, 0.05, 0.12, PAL.red); P('sphere', -0.3, 0.26, 0.17, 0.05, 0.05, 0.05, PAL.ink);
+    P('torus', 0.2, 0.62, 0.12, 0.46, 0.46, 0.6, PAL.ink);
+    P('cylinder', 0.2, 0.62, 0.12, 0.42, 0.02, 0.42, '#cfe8ec', 0, Math.PI / 2);
+    P('cylinder', 0.36, 0.3, 0.12, 0.07, 0.36, 0.07, PAL.wood, 0, 0, 0.6);
+  },
+};
+
+// ============================================================
+// layout + renderer + environment
+// ============================================================
+function axial(q, r) { return { x: SQ3 * SPACING * (q + r / 2), z: 1.5 * SPACING * r }; }
+function layoutIslands() {
+  let sx = 0, sz = 0;
+  DATA.islands.forEach((d, idx) => {
+    const p = axial(d.q, d.r);
+    const isl = { d, idx, id: d.id, cx: p.x, cz: p.z, items: [], nodes: [], rnd: mulberry32(1000 + idx * 77) };
+    ISL[d.id] = isl; ISL_LIST.push(isl); sx += p.x; sz += p.z;
+  });
+  center = { x: sx / ISL_LIST.length, z: sz / ISL_LIST.length };
+}
+
+function initRenderer() {
+  const stage = $('#stage');
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, isMobile ? 1.4 : 1.75));
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1;
+  stage.prepend(renderer.domElement);
+  renderer.domElement.setAttribute('aria-label', '3D island map'); renderer.domElement.setAttribute('role', 'img');
+  labelRenderer = new CSS2DRenderer({ element: $('#labels') });
+  scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(0xf4eee3, 42, 150);
+  camera = new THREE.PerspectiveCamera(32, 1, 0.3, 320);
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true; controls.dampingFactor = 0.07; controls.enablePan = false;
+  controls.minPolarAngle = THREE.MathUtils.degToRad(25); controls.maxPolarAngle = THREE.MathUtils.degToRad(70);
+  controls.minDistance = 3; controls.maxDistance = 70;
+  controls.addEventListener('change', () => { dirty = true; });
+  controls.addEventListener('start', () => { flight = null; });
+  raycaster = new THREE.Raycaster();
+  solidMat = new THREE.MeshStandardMaterial({ roughness: 0.78, metalness: 0 });
+  glowMat = new THREE.MeshStandardMaterial({ roughness: 0.5, metalness: 0, emissive: new THREE.Color('#ffc777'), emissiveIntensity: 0 });
+  const ro = new ResizeObserver(resize); ro.observe($('#app')); resize();
+}
+function resize() {
+  const el = $('#app'); const w = el.clientWidth || innerWidth, h = el.clientHeight || innerHeight;
+  if (!renderer) return;
+  renderer.setSize(w, h); labelRenderer.setSize(w, h);
+  camera.aspect = w / h; camera.updateProjectionMatrix(); dirty = true;
+  if (ISL_LIST.length && $('#card')) computeViewOffset();
+}
+
+function initEnvironment() {
+  const cv = new THREE.Vector3(center.x, 0, center.z);
+  // sky
+  skyMat = new THREE.ShaderMaterial({
+    side: THREE.BackSide, depthWrite: false, fog: false, toneMapped: false,
+    uniforms: { uTop: { value: new THREE.Color() }, uHorizon: { value: new THREE.Color() }, uSunDir: { value: new THREE.Vector3(0, 1, 0) }, uSun: { value: new THREE.Color() }, uNight: { value: 0 } },
+    vertexShader: `varying vec3 vDir;
+void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: `uniform vec3 uTop; uniform vec3 uHorizon; uniform vec3 uSun; uniform vec3 uSunDir; uniform float uNight; varying vec3 vDir;
+float hash(vec3 p){ p = fract(p * 0.3183099 + 0.1); p *= 17.0; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }
+void main(){
+  vec3 d = normalize(vDir);
+  vec3 c = mix(uHorizon, uTop, smoothstep(-0.02, 0.55, d.y));
+  float s = max(dot(d, normalize(uSunDir)), 0.0);
+  c += uSun * pow(s, 18.0) * 0.35 * (1.0 - uNight * 0.7);
+  if (uNight > 0.01) { float h = hash(floor(d * 180.0)); c += vec3(step(0.9965, h)) * smoothstep(0.02, 0.3, d.y) * uNight * 0.9; }
+  gl_FragColor = vec4(c, 1.0);
+  #include <colorspace_fragment>
+}`,
+  });
+  const sky = new THREE.Mesh(new THREE.SphereGeometry(170, 32, 16), skyMat); sky.position.copy(cv); sky.renderOrder = -1; scene.add(sky);
+
+  hemi = new THREE.HemisphereLight(0xeef6fa, 0x8f8270, 1.3); scene.add(hemi);
+  sun = new THREE.DirectionalLight(0xfff1de, 2.8);
+  sun.castShadow = true; const sm = isMobile ? 1024 : 2048; sun.shadow.mapSize.set(sm, sm);
+  Object.assign(sun.shadow.camera, { left: -20, right: 20, top: 22, bottom: -22, near: 1, far: 90 });
+  sun.shadow.bias = -0.0006; sun.shadow.normalBias = 0.045; sun.shadow.radius = 3;
+  sun.target.position.copy(cv); scene.add(sun, sun.target);
+  fill = new THREE.DirectionalLight(0xbfd6ff, 0.35); fill.position.set(center.x - 20, 15, center.z - 25); fill.target.position.copy(cv); scene.add(fill, fill.target);
+
+  // water
+  waterMat = new THREE.ShaderMaterial({
+    fog: true,
+    uniforms: THREE.UniformsUtils.merge([THREE.UniformsLib.fog, { uTime: { value: 0 }, uShallow: { value: new THREE.Color('#a4d4da') }, uDeep: { value: new THREE.Color('#6fa9b8') }, uCenter: { value: new THREE.Vector2(center.x, center.z) }, uNight: { value: 0 } }]),
+    vertexShader: `#include <fog_pars_vertex>
+varying vec3 vW;
+void main(){ vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; vec4 mvPosition = viewMatrix * w; gl_Position = projectionMatrix * mvPosition;
+#include <fog_vertex>
+}`,
+    fragmentShader: `uniform float uTime; uniform vec3 uShallow; uniform vec3 uDeep; uniform vec2 uCenter; uniform float uNight; varying vec3 vW;
+#include <fog_pars_fragment>
+void main(){
+  float d = length(vW.xz - uCenter);
+  float w1 = sin(vW.x * 0.35 + uTime * 0.6) * sin(vW.z * 0.31 - uTime * 0.5) * 0.5 + 0.5;
+  float w2 = sin((vW.x + vW.z) * 0.8 - uTime * 1.1) * 0.5 + 0.5;
+  vec3 c = mix(uShallow, uDeep, smoothstep(9.0, 48.0, d) * 0.85 + (w1 - 0.5) * 0.12);
+  c *= 0.97 + w2 * 0.05;
+  float s = pow(max(0.0, sin(vW.x * 3.1 + uTime * 1.7) * sin(vW.z * 2.7 - uTime * 1.3)), 28.0) * 0.22 * (1.0 - uNight * 0.7);
+  gl_FragColor = vec4(c + s, 1.0);
+  #include <tonemapping_fragment>
+  #include <colorspace_fragment>
+  #include <fog_fragment>
+}`,
+  });
+  const water = new THREE.Mesh(new THREE.CircleGeometry(160, 64).rotateX(-Math.PI / 2), waterMat);
+  water.position.set(center.x, WATER_Y, center.z); scene.add(water);
+}
+
+// ---------- island ground ----------
+function hexPts(r) { const p = []; for (let k = 0; k < 6; k++) { const a = Math.PI / 6 + k * Math.PI / 3; p.push(new THREE.Vector2(Math.cos(a) * r, Math.sin(a) * r)); } return p; }
+function hexRingGeo(ro, ri) { const s = new THREE.Shape(hexPts(ro)); s.holes.push(new THREE.Path(hexPts(ri).reverse())); return new THREE.ShapeGeometry(s).rotateX(-Math.PI / 2); }
+function groundTexture(kind, seed) {
+  const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d'); const rnd = mulberry32(seed);
+  const base = ['#ecdfca', '#e7ddcc', '#eee2cf'][kind]; g.fillStyle = base; g.fillRect(0, 0, 256, 256);
+  if (kind === 0) {
+    g.strokeStyle = '#ddcbb1'; g.lineWidth = 2;
+    for (let y = 0; y < 256; y += 32) { g.beginPath(); g.moveTo(0, y); g.lineTo(256, y); g.stroke(); for (let x = (y / 32) % 2 ? 0 : 32; x < 256; x += 64) { g.beginPath(); g.moveTo(x, y); g.lineTo(x, y + 32); g.stroke(); } }
+  } else if (kind === 1) {
+    for (let i = 0; i < 900; i++) { g.fillStyle = rnd() < 0.5 ? '#d9ccb6' : '#f4ecdf'; const r = 1 + rnd() * 2.5; g.beginPath(); g.arc(rnd() * 256, rnd() * 256, r, 0, 7); g.fill(); }
+  } else {
+    g.fillStyle = '#e4d6c0'; for (let i = -256; i < 256; i += 28) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i + 14, 0); g.lineTo(i + 270, 256); g.lineTo(i + 256, 256); g.fill(); }
+  }
+  for (let i = 0; i < 300; i++) { g.fillStyle = `rgba(120,90,60,${0.03 + rnd() * 0.04})`; g.fillRect(rnd() * 256, rnd() * 256, 2, 2); }
+  const tx = new THREE.CanvasTexture(c); tx.wrapS = tx.wrapT = THREE.RepeatWrapping; tx.colorSpace = THREE.SRGBColorSpace; tx.anisotropy = 4; return tx;
+}
+function bandTexture() {
+  const c = document.createElement('canvas'); c.width = 128; c.height = 32; const g = c.getContext('2d');
+  g.fillStyle = '#ffffff'; g.fillRect(0, 0, 128, 32);
+  g.fillStyle = '#d9d0c8'; for (let x = 0; x < 128; x += 32) { g.beginPath(); g.moveTo(x, 32); g.lineTo(x + 16, 6); g.lineTo(x + 32, 32); g.fill(); }
+  g.fillStyle = '#ffffff'; g.fillRect(0, 0, 128, 5);
+  const tx = new THREE.CanvasTexture(c); tx.wrapS = THREE.RepeatWrapping; tx.repeat.set(12, 1); tx.colorSpace = THREE.SRGBColorSpace; return tx;
+}
+function worldUV(geo) { const p = geo.attributes.position, uv = geo.attributes.uv; for (let i = 0; i < p.count; i++) uv.setXY(i, p.getX(i) / 2.2, p.getZ(i) / 2.2); return geo; }
+function colorAttr(geo, hex) { const c = new THREE.Color(hex); const n = geo.attributes.position.count; const a = new Float32Array(n * 3); for (let i = 0; i < n; i++) { a[i * 3] = c.r; a[i * 3 + 1] = c.g; a[i * 3 + 2] = c.b; } geo.setAttribute('color', new THREE.BufferAttribute(a, 3)); return geo; }
+function mergeAdd(geos, mat, opts = {}) {
+  const g = BGU.mergeGeometries(geos, false); const m = new THREE.Mesh(g, mat);
+  m.receiveShadow = opts.receive !== false; m.castShadow = !!opts.cast; if (opts.order) m.renderOrder = opts.order; scene.add(m); return m;
+}
+
+function buildIslands() {
+  const tops = [[], [], []], sides = [], bands = [], curbs = [], paths = [], shallows = [], foams = [];
+  const sideH = TOP - (WATER_Y - 0.5);
+  for (const isl of ISL_LIST) {
+    const { cx, cz } = isl;
+    tops[isl.d.ground].push(worldUV(new THREE.CircleGeometry(R - 0.05, 6).rotateZ(Math.PI / 6).rotateX(-Math.PI / 2).translate(cx, TOP, cz)));
+    const sg = new THREE.CylinderGeometry(R, R + 0.07, sideH, 6, 1, true).translate(cx, TOP - sideH / 2, cz); sg.deleteAttribute('uv'); sides.push(sg);
+    bands.push(colorAttr(new THREE.CylinderGeometry(R + 0.006, R + 0.006, 0.16, 6, 1, true).translate(cx, TOP - 0.08, cz), isl.d.accent));
+    curbs.push(hexRingGeo(R + 0.004, R - 0.15).translate(cx, TOP + 0.006, cz));
+    paths.push(hexRingGeo(PATH_R + 0.16, PATH_R - 0.16).translate(cx, TOP + 0.004, cz));
+    shallows.push(new THREE.RingGeometry(R * 0.97, R + 0.7, 42).rotateX(-Math.PI / 2).translate(cx, WATER_Y + 0.01, cz));
+    foams.push(hexRingGeo(R + 0.16, R).translate(cx, WATER_Y + 0.02, cz));
+  }
+  tops.forEach((arr, k) => {
+    if (!arr.length) return;
+    const m = mergeAdd(arr, new THREE.MeshStandardMaterial({ roughness: 0.92, map: groundTexture(k, 11 + k) }));
+    topMeshes.push(m);
+  });
+  mergeAdd(sides, waterMat, { receive: false });
+  mergeAdd(bands, new THREE.MeshStandardMaterial({ roughness: 0.8, vertexColors: true, map: bandTexture(), polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }));
+  mergeAdd(curbs, new THREE.MeshStandardMaterial({ color: '#e4d6c3', roughness: 0.85, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2 }));
+  mergeAdd(paths, new THREE.MeshStandardMaterial({ color: '#ead2bb', roughness: 0.9, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2 }));
+  mergeAdd(shallows, new THREE.MeshBasicMaterial({ color: '#d4f0ea', transparent: true, opacity: 0.5, depthWrite: false }), { receive: false, order: 1 });
+  mergeAdd(foams, new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.55, depthWrite: false }), { receive: false, order: 2 });
+}
+
+// ---------- bridges + walking graph ----------
+const NODES = []; const ADJ = [];
+function addNode(p) { NODES.push(p); ADJ.push([]); return NODES.length - 1; }
+function link(a, b, pts) { const w = pts ? polyLen(pts) : NODES[a].distanceTo(NODES[b]); ADJ[a].push({ to: b, w, pts }); ADJ[b].push({ to: a, w, pts: pts ? pts.slice().reverse() : null }); }
+function polyLen(pts) { let L = 0; for (let i = 1; i < pts.length; i++) L += pts[i].distanceTo(pts[i - 1]); return L; }
+
+function buildBridgesAndGraph() {
+  mainKit = new Kit(); smallKit = new Kit();
+  for (const isl of ISL_LIST) {
+    for (let i = 0; i < 12; i++) {
+      const k = i >> 1; const vert = i % 2 === 1;
+      const a = vert ? (k * Math.PI / 3 + Math.PI / 6) : (k * Math.PI / 3);
+      const r = vert ? PATH_R : PATH_R * Math.cos(Math.PI / 6);
+      isl.nodes.push(addNode(new THREE.Vector3(isl.cx + Math.cos(a) * r, TOP, isl.cz + Math.sin(a) * r)));
+    }
+    for (let i = 0; i < 12; i++) link(isl.nodes[i], isl.nodes[(i + 1) % 12]);
+  }
+  const rnd = mulberry32(42);
+  const P = makeP(mainKit, new THREE.Matrix4(), null, rnd);
+  for (let i = 0; i < ISL_LIST.length; i++) for (let j = i + 1; j < ISL_LIST.length; j++) {
+    const A = ISL_LIST[i], B = ISL_LIST[j];
+    const dq = B.d.q - A.d.q, dr = B.d.r - A.d.r;
+    const adj = (dq === 1 && dr === 0) || (dq === -1 && dr === 0) || (dq === 0 && dr === 1) || (dq === 0 && dr === -1) || (dq === 1 && dr === -1) || (dq === -1 && dr === 1);
+    if (!adj) continue;
+    const ang = Math.atan2(B.cz - A.cz, B.cx - A.cx);
+    const k = ((Math.round(ang / (Math.PI / 3)) % 6) + 6) % 6;
+    const na = A.nodes[k * 2], nb = B.nodes[((k + 3) % 6) * 2];
+    const pa = NODES[na], pb = NODES[nb];
+    const dir = new THREE.Vector3().subVectors(pb, pa); const L = dir.length(); dir.normalize();
+    const arch = 0.04 + Math.min(0.06, (L - 0.6) * 0.08);
+    const pts = [];
+    for (let s = 0; s <= 8; s++) { const f = s / 8; pts.push(new THREE.Vector3(pa.x + dir.x * L * f, TOP + Math.sin(f * Math.PI) * (arch + 0.03) + (s === 0 || s === 8 ? 0 : 0.0), pa.z + dir.z * L * f)); }
+    link(na, nb, pts);
+    const yaw = Math.atan2(dir.x, dir.z);
+    for (let s = 0; s < 9; s++) {
+      const f = (s + 0.5) / 9; const y = TOP + 0.03 + Math.sin(f * Math.PI) * arch;
+      P('box', pa.x + dir.x * L * f, y, pa.z + dir.z * L * f, 0.4, 0.035, L / 9 * 0.9, PAL.wood, yaw);
+    }
+    for (const sgn of [-1, 1]) {
+      const px = -dir.z * 0.21 * sgn, pz = dir.x * 0.21 * sgn;
+      for (const f of [0.08, 0.92]) P('cylinder', pa.x + dir.x * L * f + px, TOP + 0.12, pa.z + dir.z * L * f + pz, 0.035, 0.2, 0.035, PAL.cream);
+      for (let s = 0; s < 4; s++) { const f = (s + 0.5) / 4; P('box', pa.x + dir.x * L * f + px, TOP + 0.17 + Math.sin(f * Math.PI) * arch, pa.z + dir.z * L * f + pz, 0.025, 0.025, L / 4, PAL.cream, yaw, -Math.cos(f * Math.PI) * arch * 0.9); }
+    }
+  }
+}
+function dijkstra(a, b) {
+  const n = NODES.length, dist = new Array(n).fill(Infinity), prev = new Array(n).fill(null), done = new Array(n).fill(false);
+  dist[a] = 0;
+  for (;;) {
+    let u = -1, best = Infinity; for (let i = 0; i < n; i++) if (!done[i] && dist[i] < best) { best = dist[i]; u = i; }
+    if (u < 0 || u === b) break; done[u] = true;
+    for (const e of ADJ[u]) { const d = dist[u] + e.w; if (d < dist[e.to]) { dist[e.to] = d; prev[e.to] = { from: u, e }; } }
+  }
+  const pts = []; let cur = b; const chain = [];
+  while (prev[cur]) { chain.push(prev[cur]); cur = prev[cur].from; }
+  chain.reverse();
+  pts.push(NODES[a].clone());
+  for (const { e } of chain) { if (e.pts) for (let i = 1; i < e.pts.length; i++) pts.push(e.pts[i].clone()); else pts.push(NODES[e.to].clone()); }
+  return pts;
+}
+
+// ---------- items ----------
+function itemSlots(n) {
+  const s = THREE.MathUtils.clamp(0.62 - (n - 3) * 0.053, 0.46, 0.62);
+  const cand = [];
+  for (let j = -5; j <= 5; j++) for (let i = -5; i <= 5; i++) {
+    const z = j * s * 0.92, x = i * s + ((j & 1) ? s / 2 : 0);
+    if (Math.hypot(x, z) + s * 0.5 > 1.3) continue;
+    if (Math.abs(x) < 0.575 + s / 2 - 0.02 && Math.abs(z + 0.58) < 0.5 + s / 2) continue;
+    cand.push({ x, z });
+  }
+  cand.sort((a, b) => Math.hypot(a.x, a.z - 0.35) - Math.hypot(b.x, b.z - 0.35) || a.x - b.x);
+  const out = [];
+  for (const c of cand) { if (out.length >= n) break; if (out.every((o) => Math.hypot(o.x - c.x, o.z - c.z) > s * 0.98)) out.push(c); }
+  return { slots: out, s };
+}
+function buildItems() {
+  for (const isl of ISL_LIST) {
+    const list = isl.d.items; const rest = list.length - 1;
+    const { slots, s } = itemSlots(rest);
+    list.forEach((it, i) => {
+      const main = i === 0;
+      const pos = main ? { x: 0, z: -0.58 } : slots[i - 1] || { x: 0, z: 0.6 };
+      const size = main ? 1.15 : s * 0.92;
+      const rot = main ? 0 : (isl.rnd() - 0.5) * 0.3;
+      const wx = isl.cx + pos.x, wz = isl.cz + pos.z;
+      const base = new THREE.Matrix4().compose(new THREE.Vector3(wx, TOP, wz), new THREE.Quaternion().setFromEuler(new THREE.Euler(0, rot, 0)), new THREE.Vector3(size, size, size));
+      const parts = [];
+      const P = makeP(mainKit, base, it.id, mulberry32(5000 + isl.idx * 31 + i), parts);
+      (MODELS[it.model] || MODELS.house)(P, isl.d.accent);
+      const topY = Math.max(...parts.map((p) => p.top));
+      const rec = { d: it, isl, idx: i, x: wx, z: wz, size, parts, height: TOP + topY * size };
+      ITEMS[it.id] = rec; isl.items.push(rec);
+    });
+  }
+}
+
+// ---------- island decor: trees, lamps, shrubs, string lights ----------
+const TREE = {
+  conifer(P, x, b, z, s) { P('cylinder', x, b + 0.08 * s, z, 0.06 * s, 0.16 * s, 0.06 * s, PAL.wood); [[0.28, 0.42, 0.46], [0.48, 0.34, 0.38], [0.66, 0.24, 0.3]].forEach(([y, r, h]) => P('cone', x, b + y * s, z, r * s, h * s, r * s, PAL.p3)); },
+  cherry(P, x, b, z, s) { P('cylinder', x, b + 0.15 * s, z, 0.06 * s, 0.3 * s, 0.06 * s, PAL.wood); [[0, 0.45, 0, 0.36], [0.1, 0.52, 0.06, 0.28], [-0.1, 0.5, -0.04, 0.3]].forEach(([dx, y, dz, r]) => P('ico', x + dx * s, b + y * s, z + dz * s, r * s, r * s * 0.9, r * s, PAL.pink)); },
+  fruit(P, x, b, z, s) { P('cylinder', x, b + 0.14 * s, z, 0.06 * s, 0.28 * s, 0.06 * s, PAL.wood); P('ico', x, b + 0.44 * s, z, 0.42 * s, 0.38 * s, 0.42 * s, PAL.p2); [[0.12, 0.42, 0.14], [-0.14, 0.5, 0.08], [0.04, 0.56, -0.14]].forEach(([dx, y, dz]) => P('sphere', x + dx * s, b + y * s, z + dz * s, 0.06 * s, 0.06 * s, 0.06 * s, '#f0a040')); },
+  palm(P, x, b, z, s) { for (let k = 0; k < 5; k++) P('cylinder', x + k * 0.015 * s, b + (0.06 + k * 0.11) * s, z, 0.06 * s, 0.12 * s, 0.06 * s, k % 2 ? PAL.wood : '#c69a72'); for (let k = 0; k < 6; k++) { const g = k * Math.PI / 3; P('box', x + Math.cos(g) * 0.13 * s + 0.07 * s, b + 0.6 * s, z + Math.sin(g) * 0.13 * s, 0.3 * s, 0.02 * s, 0.08 * s, PAL.p2, -g, 0, -0.35); } },
+  willow(P, x, b, z, s) { P('cylinder', x, b + 0.16 * s, z, 0.07 * s, 0.32 * s, 0.07 * s, PAL.wood); P('sphere', x, b + 0.5 * s, z, 0.4 * s, 0.3 * s, 0.4 * s, PAL.p1); for (let k = 0; k < 6; k++) { const g = k * Math.PI / 3; P('cone', x + Math.cos(g) * 0.16 * s, b + 0.34 * s, z + Math.sin(g) * 0.16 * s, 0.12 * s, 0.32 * s, 0.12 * s, PAL.p1, 0, Math.PI); } },
+  maple(P, x, b, z, s) { P('cylinder', x, b + 0.15 * s, z, 0.06 * s, 0.3 * s, 0.06 * s, PAL.wood); [[0, 0.46, 0, 0.4, '#e08a3c'], [0.1, 0.56, 0.05, 0.28, '#d4643a'], [-0.08, 0.54, -0.06, 0.26, '#e9a94a']].forEach(([dx, y, dz, r, c]) => P('ico', x + dx * s, b + y * s, z + dz * s, r * s, r * s, r * s, c)); },
+};
+function nearItem(isl, x, z, d) { return isl.items.some((it) => Math.hypot(it.x - x, it.z - z) < d + it.size * 0.42); }
+function buildIslandDecor() {
+  const I = new THREE.Matrix4();
+  for (const isl of ISL_LIST) {
+    const rnd = isl.rnd;
+    const PT = makeP(mainKit, I, 'isl:' + isl.id, rnd);
+    const PS = makeP(smallKit, I, null, rnd);
+    const tree = TREE[isl.d.tree] || TREE.maple;
+    // big trees in the corners just inside the path
+    let placed = 0;
+    for (let k = 0; k < 6 && placed < 5; k++) {
+      const a = k * Math.PI / 3 + Math.PI / 6; const r = 1.34;
+      const x = isl.cx + Math.cos(a) * r, z = isl.cz + Math.sin(a) * r;
+      if (nearItem(isl, x, z, 0.18)) continue;
+      tree(PT, x, TOP, z, 0.95 + rnd() * 0.25); placed++;
+    }
+    // lamps at the hex corners outside the path
+    for (let k = 0; k < 6; k++) {
+      const a = k * Math.PI / 3 + Math.PI / 6; const x = isl.cx + Math.cos(a) * 1.88, z = isl.cz + Math.sin(a) * 1.88;
+      PS('cylinder', x, TOP + 0.26, z, 0.035, 0.52, 0.035, PAL.ink); PS('cone', x, TOP + 0.56, z, 0.12, 0.06, 0.12, PAL.ink); PS('glowsphere', x, TOP + 0.51, z, 0.09, 0.09, 0.09, '#fff3c4');
+      LAMPS.push(new THREE.Vector3(x, TOP + 0.015, z));
+    }
+    // shrubs, pots, benches along the inner edge
+    for (let k = 0; k < 6; k++) {
+      const a = k * Math.PI / 3; const tx = -Math.sin(a), tz = Math.cos(a);
+      for (const off of [-0.42, 0.42]) {
+        const x = isl.cx + Math.cos(a) * 1.22 + tx * off, z = isl.cz + Math.sin(a) * 1.22 + tz * off;
+        if (nearItem(isl, x, z, 0.12)) continue;
+        const pick = rnd();
+        if (pick < 0.45) PS('ico', x, TOP + 0.07, z, 0.18, 0.15, 0.18, rnd() < 0.5 ? PAL.p2 : PAL.p3);
+        else if (pick < 0.8) { PS('cylinder', x, TOP + 0.05, z, 0.1, 0.1, 0.1, '#c77a55'); PS('sphere', x, TOP + 0.13, z, 0.11, 0.09, 0.11, PASTELS[(rnd() * 5) | 0]); }
+        else { const yaw = Math.atan2(tx, tz); PS('box', x, TOP + 0.07, z, 0.24, 0.025, 0.08, PAL.wood, yaw + Math.PI / 2); PS('box', x, TOP + 0.035, z, 0.2, 0.05, 0.05, PAL.ink, yaw + Math.PI / 2); }
+      }
+    }
+    // string lights along the island edge
+    const hp = hexPts(R - 0.08);
+    for (let k = 0; k < 6; k++) { const p0 = hp[k], p1 = hp[(k + 1) % 6]; for (let s = 0; s < 7; s++) { const f = s / 7; PS('glowsphere', isl.cx + p0.x + (p1.x - p0.x) * f, TOP + 0.03, isl.cz + p0.y + (p1.y - p0.y) * f, 0.04, 0.04, 0.04, '#fff0c8'); } }
+  }
+  // additive light pools under lamps
+  const pc = document.createElement('canvas'); pc.width = pc.height = 64; const g = pc.getContext('2d');
+  const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, 'rgba(255,210,140,1)'); gr.addColorStop(1, 'rgba(255,210,140,0)'); g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
+  const pm = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(pc), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0 });
+  poolMesh = new THREE.InstancedMesh(new THREE.PlaneGeometry(0.9, 0.9).rotateX(-Math.PI / 2), pm, LAMPS.length);
+  const m = new THREE.Matrix4(); LAMPS.forEach((p, i) => { m.makeTranslation(p.x, p.y, p.z); poolMesh.setMatrixAt(i, m); });
+  poolMesh.renderOrder = 3; scene.add(poolMesh);
+}
+const LAMPS = [];
+
+// ---------- terrain + background ----------
+let simplex;
+function fbm(x, y) { let a = 0, f = 1, amp = 0.5; for (let i = 0; i < 4; i++) { a += simplex.noise(x * f, y * f) * amp; f *= 2; amp *= 0.5; } return a; }
+const CAMDIR = { x: 0.24 / Math.hypot(0.24, 0.87), y: 0.87 / Math.hypot(0.24, 0.87) };
+function terrainH(x, z) {
+  const dx = x - center.x, dz = z - center.z; const r = Math.hypot(dx, dz);
+  const n = fbm(dx * 0.03, dz * 0.03);
+  let rise = THREE.MathUtils.smoothstep(r, 24, 50) * (9 + n * 6);
+  const facing = r > 0.001 ? (dx * CAMDIR.x + dz * CAMDIR.y) / r : 0;
+  rise *= 1 - 0.78 * THREE.MathUtils.smoothstep(facing, 0.05, 0.75);
+  let h = -2.4 + rise + fbm(dx * 0.08 + 7, dz * 0.08) * 1.1 * THREE.MathUtils.smoothstep(r, 18, 36);
+  if (h > 0) h = THREE.MathUtils.lerp(h, Math.round(h / 0.7) * 0.7, 0.55);
+  return h;
+}
+function terrainColor(h, c) {
+  const stops = [[-0.3, '#8fb3ad'], [0.45, '#d9c9a3'], [2.2, '#aec493'], [4.2, '#a3b986'], [7.5, '#6f8a62'], [99, '#b2a38d']];
+  for (const [lim, hex] of stops) if (h < lim) return c.set(hex);
+  return c.set('#b2a38d');
+}
+function buildTerrain() {
+  simplex = new SimplexNoise({ random: mulberry32(7) });
+  const geo = new THREE.PlaneGeometry(170, 170, 160, 160).rotateX(-Math.PI / 2).toNonIndexed();
+  const p = geo.attributes.position;
+  for (let i = 0; i < p.count; i++) { const x = p.getX(i) + center.x, z = p.getZ(i) + center.z; p.setXYZ(i, x, terrainH(x, z), z); }
+  const colors = new Float32Array(p.count * 3); const c = new THREE.Color();
+  for (let i = 0; i < p.count; i += 3) { const h = (p.getY(i) + p.getY(i + 1) + p.getY(i + 2)) / 3; terrainColor(h, c); for (let k = 0; k < 3; k++) { colors[(i + k) * 3] = c.r; colors[(i + k) * 3 + 1] = c.g; colors[(i + k) * 3 + 2] = c.b; } }
+  geo.setAttribute('color', new THREE.BufferAttribute(colors, 3)); geo.computeVertexNormals();
+  const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, flatShading: true, roughness: 0.95 }));
+  mesh.position.y = WATER_Y - 0.02; mesh.receiveShadow = true; scene.add(mesh);
+
+  // background trees
+  const con = BGU.mergeGeometries([new THREE.ConeGeometry(0.55, 0.9, 6).translate(0, 0.75, 0), new THREE.ConeGeometry(0.42, 0.75, 6).translate(0, 1.15, 0), new THREE.ConeGeometry(0.28, 0.6, 6).translate(0, 1.5, 0), new THREE.CylinderGeometry(0.1, 0.12, 0.4, 5).translate(0, 0.2, 0)].map((g) => g.deleteAttribute('uv') && g));
+  const brnd = mulberry32(99);
+  const icos = []; for (let k = 0; k < 4; k++) { const g = new THREE.IcosahedronGeometry(0.42 + brnd() * 0.15, 0); g.translate((brnd() - 0.5) * 0.5, 0.75 + brnd() * 0.45, (brnd() - 0.5) * 0.5); icos.push(g); }
+  icos.push(new THREE.CylinderGeometry(0.09, 0.12, 0.6, 5).translate(0, 0.3, 0).toNonIndexed());
+  const broad = BGU.mergeGeometries(icos.map((g) => { g.deleteAttribute('uv'); return g; }));
+  const mat = new THREE.MeshStandardMaterial({ flatShading: true, roughness: 0.9 });
+  const N = isMobile ? 900 : 2600; const rnd = mulberry32(123);
+  const spots = { c: [], b: [] };
+  let guard = 0;
+  while (spots.c.length + spots.b.length < N && guard++ < N * 12) {
+    const a = rnd() * Math.PI * 2, r = 16 + Math.sqrt(rnd()) * 36; const x = center.x + Math.cos(a) * r, z = center.z + Math.sin(a) * r;
+    const h = terrainH(x, z) + WATER_Y; if (h < 0.35 || h > 8.6) continue;
+    if (simplex.noise(x * 0.06, z * 0.06) < -0.35) continue;
+    (h > 4.5 || rnd() < 0.35 ? spots.c : spots.b).push([x, h - 0.05, z, 0.8 + rnd() * 0.9, rnd() * 6]);
+  }
+  const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), s = new THREE.Vector3(), cc = new THREE.Color();
+  const greens = ['#6f8a62', '#7f9a68', '#5f7a58', '#8aa271', '#9aae78'];
+  for (const [geoT, list] of [[con, spots.c], [broad, spots.b]]) {
+    const im = new THREE.InstancedMesh(geoT, mat, list.length);
+    list.forEach(([x, y, z, sc, ry], i) => { q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), ry); m4.compose(v.set(x, y, z), q, s.set(sc, sc, sc)); im.setMatrixAt(i, m4); im.setColorAt(i, cc.set(greens[i % greens.length]).offsetHSL(0, 0, (rnd() - 0.5) * 0.06)); });
+    im.instanceColor.needsUpdate = true; scene.add(im);
+  }
+}
+
+function buildBackdrop() {
+  // three distant ridge bands
+  const rnd = mulberry32(311);
+  [[96, 9, 16, '#9db4b0'], [116, 12, 22, '#a9b9bf'], [136, 15, 30, '#b8c4cc']].forEach(([rad, hMin, hVar, hex], ri) => {
+    const seg = 160; const pos = []; const idx = [];
+    for (let i = 0; i <= seg; i++) {
+      const a = i / seg * Math.PI * 2; const facing = Math.cos(a) * CAMDIR.x + Math.sin(a) * CAMDIR.y;
+      const h = (hMin + (simplex.noise(i * 0.12, ri * 9) * 0.5 + 0.5) * hVar) * (1 - 0.55 * THREE.MathUtils.smoothstep(facing, 0.2, 0.9));
+      const x = center.x + Math.cos(a) * rad, z = center.z + Math.sin(a) * rad;
+      pos.push(x, -2, z, x, h, z);
+      if (i < seg) { const b = i * 2; idx.push(b, b + 2, b + 1, b + 1, b + 2, b + 3); }
+    }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx);
+    const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: hex, fog: false, side: THREE.DoubleSide }));
+    m.userData.base = new THREE.Color(hex); m.userData.mix = 0.3 + ri * 0.22; m.renderOrder = -1 + ri * 0; scene.add(m); mountainMeshes.push(m);
+  });
+  // clouds
+  const N = 12; const per = 6; cloudMesh = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 2), new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 1, flatShading: false }), N * per);
+  cloudMesh.userData.clouds = [];
+  for (let c = 0; c < N; c++) {
+    const a = rnd() * Math.PI * 2, r = 25 + rnd() * 55; const puffs = [];
+    for (let k = 0; k < per; k++) puffs.push([(k - per / 2) * 1.3 + rnd(), rnd() * 0.9, (rnd() - 0.5) * 1.6, 1.1 + rnd() * 1.1]);
+    cloudMesh.userData.clouds.push({ x: center.x + Math.cos(a) * r, y: 15 + rnd() * 9, z: center.z + Math.sin(a) * r, puffs, sp: 0.25 + rnd() * 0.25 });
+  }
+  scene.add(cloudMesh); updateClouds(0);
+  // islets, lighthouse, sailboats
+  const deco = new Kit(); const P = makeP(deco, new THREE.Matrix4(), null, rnd);
+  const isles = [[-14, 6], [15, 9], [-9, -12], [12, -11], [3, 14]];
+  isles.forEach(([dx, dz], i) => {
+    const x = center.x + dx, z = center.z + dz; const s = 0.9 + rnd() * 0.8;
+    P('cylinder', x, WATER_Y + 0.1, z, 1.6 * s, 0.4, 1.6 * s, PAL.sand); P('ico', x, WATER_Y + 0.3, z, 1.3 * s, 0.5, 1.3 * s, PAL.p1);
+    if (i === 1) { P('cylinder', x, 0.9, z, 0.36, 1.6, 0.36, PAL.white); for (const y of [0.5, 1.1]) P('cylinder', x, y, z, 0.38, 0.2, 0.38, PAL.red); P('glowsphere', x, 1.8, z, 0.3, 0.3, 0.3, '#fff3c4'); P('cone', x, 2.1, z, 0.44, 0.34, 0.44, PAL.ink); }
+    else { TREE.conifer(P, x + 0.3, WATER_Y + 0.45, z, 1.2 * s); TREE.palm(P, x - 0.4, WATER_Y + 0.45, z + 0.2, 1.1 * s); }
+  });
+  deco.build(scene, { cast: false });
+  for (let b = 0; b < 4; b++) {
+    const g = new THREE.Group();
+    const hull = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.18, 0.32), new THREE.MeshStandardMaterial({ color: b % 2 ? PAL.cream : PAL.coral, roughness: 0.8 })); hull.position.y = 0.05;
+    const sail = new THREE.Mesh(GEO.prism, new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.9 })); sail.scale.set(0.6, 0.85, 0.03); sail.position.set(0.05, 0.6, 0);
+    const mast = new THREE.Mesh(GEO.cylinder, solidMat); mast.scale.set(0.03, 1.0, 0.03); mast.position.set(0.05, 0.55, 0);
+    g.add(hull, sail, mast); scene.add(g);
+    boats.push({ g, r: 13 + b * 3.2, a: rnd() * Math.PI * 2, sp: 0.02 + rnd() * 0.02 });
+  }
+  updateBoats(0);
+}
+function updateClouds(time) {
+  const m = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), s = new THREE.Vector3(); let i = 0;
+  for (const c of cloudMesh.userData.clouds) {
+    let x = c.x + time * c.sp; x = ((x - center.x + 90) % 180 + 180) % 180 - 90 + center.x;
+    for (const [px, py, pz, ps] of c.puffs) { m.compose(v.set(x + px, c.y + py, c.z + pz), q, s.set(ps, ps * 0.7, ps)); cloudMesh.setMatrixAt(i++, m); }
+  }
+  cloudMesh.instanceMatrix.needsUpdate = true;
+}
+function updateBoats(time) {
+  for (const b of boats) {
+    const a = b.a + time * b.sp; b.g.position.set(center.x + Math.cos(a) * b.r, WATER_Y + Math.sin(time * 1.3 + b.r) * 0.04, center.z + Math.sin(a) * b.r);
+    b.g.rotation.set(Math.sin(time + b.r) * 0.04, -a, 0);
+  }
+}
+
+// ============================================================
+// labels + pins
+// ============================================================
+const LABELS = [];
+function buildLabels() {
+  ISL_LIST.forEach((isl, i) => {
+    const el = document.createElement('button'); el.className = 'isl-label'; el.type = 'button';
+    el.innerHTML = `<span class="n" style="background:${isl.d.accent}">${String(i + 1).padStart(2, '0')}</span><span class="t"></span>`;
+    el.addEventListener('click', (e) => { e.stopPropagation(); selectIsland(isl.id); });
+    const o = new CSS2DObject(el); o.position.set(isl.cx, TOP * 0.35, isl.cz + R * Math.cos(Math.PI / 6) + 0.15); scene.add(o);
+    LABELS.push({ isl, el, o, mode: 'full', fullW: 0 });
+  });
+  updateLabelText();
+}
+function updateLabelText() { for (const L of LABELS) { L.el.querySelector('.t').textContent = tr(L.isl.d.name); L.fullW = 0; L.el.setAttribute('aria-label', tr(L.isl.d.name)); } }
+let PINS = [];
+const CIRCLED = '①②③④⑤⑥⑦⑧⑨';
+function clearPins() { for (const p of PINS) { scene.remove(p.o); scene.remove(p.line); p.line.geometry.dispose(); } PINS = []; }
+function showPins(isl) {
+  clearPins();
+  const lineMat = new THREE.LineBasicMaterial({ color: PAL.red, depthTest: false, transparent: true, opacity: 0.85 });
+  isl.items.forEach((it, i) => {
+    const el = document.createElement('button'); el.className = 'pin'; el.type = 'button'; el.textContent = CIRCLED[i] ? String(i + 1) : '•';
+    el.setAttribute('aria-label', tr(it.d.name));
+    el.addEventListener('click', (e) => { e.stopPropagation(); selectItem(it.d.id); });
+    const top = new THREE.Vector3(it.x, it.height + 0.02, it.z); const pin = top.clone(); pin.y += 0.42;
+    const o = new CSS2DObject(el); o.position.copy(pin); scene.add(o);
+    const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([top, pin.clone().add(new THREE.Vector3(0, -0.1, 0))]), lineMat); line.renderOrder = 999; scene.add(line);
+    PINS.push({ o, el, line, item: it });
+  });
+  markPins();
+}
+function markPins() { const lit = litSet(); for (const p of PINS) p.el.classList.toggle('lit', lit.has(p.item.d.id)); }
+
+// label collision avoidance
+const rectOverlap = (a, b, pad = 0) => a.left < b.right + pad && a.right > b.left - pad && a.top < b.bottom + pad && a.bottom > b.top - pad;
+function layoutLabels() {
+  const blockers = ['#brand', '#tools', '#card', '#side', '#hud', '#log', '#legend', '#timeBtn'].map((s) => $(s)).filter((e) => e && !e.hidden && e.offsetParent !== null).map((e) => e.getBoundingClientRect());
+  const placed = [];
+  const order = LABELS.slice().sort((a, b) => b.o.position.z - a.o.position.z);
+  for (const L of order) {
+    if (L.el.style.display === 'none') continue;
+    const r = L.el.getBoundingClientRect(); if (!r.width) continue;
+    if (L.mode === 'full' && !L.fullW) L.fullW = r.width;
+    const cx = (r.left + r.right) / 2;
+    const fullW = L.fullW || r.width, compW = 34;
+    const mk = (w) => ({ left: cx - w / 2, right: cx + w / 2, top: r.top, bottom: r.bottom });
+    const free = (rect, pad) => !blockers.some((b) => rectOverlap(rect, b, pad)) && !placed.some((p) => rectOverlap(rect, p, pad));
+    let mode;
+    const fr = mk(fullW), cr = mk(compW);
+    if (free(fr, L.mode === 'full' ? 0 : 8)) mode = 'full';
+    else if (free(cr, L.mode === 'hidden' ? 8 : 0)) mode = 'compact';
+    else mode = 'hidden';
+    if (mode !== L.mode) { L.mode = mode; L.el.classList.toggle('compact', mode === 'compact'); L.el.style.visibility = mode === 'hidden' ? 'hidden' : ''; }
+    if (mode !== 'hidden') placed.push(mode === 'full' ? fr : cr);
+  }
+}
+
+// ============================================================
+// flows + walkers
+// ============================================================
+const FLOWS = [];
+function flowMaterial(style) {
+  return new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false,
+    uniforms: { uTime: { value: 0 }, uLen: { value: 1 }, uStyle: { value: style }, uColor: { value: new THREE.Color(PAL.red) }, uOpacity: { value: 0.82 } },
+    vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: `uniform float uTime; uniform float uLen; uniform float uStyle; uniform vec3 uColor; uniform float uOpacity; varying vec2 vUv;
+void main(){
+  float u = vUv.x * uLen * 5.0 - uTime * 1.4; float f = fract(u);
+  if (uStyle > 0.5 && uStyle < 1.5 && f > 0.6) discard;
+  if (uStyle > 1.5 && f > 0.3) discard;
+  float glow = 0.86 + 0.14 * sin(u * 6.2831);
+  gl_FragColor = vec4(uColor * glow, uOpacity);
+  #include <colorspace_fragment>
+}`,
+  });
+}
+function buildFlows() {
+  for (const f of DATA.flows) {
+    const A = ISL[f.from], B = ISL[f.to]; if (!A || !B) continue;
+    // start/end at the node nearest the main building side so walks look intentional
+    const pts = dijkstra(A.nodes[pickNode(A, B)], B.nodes[pickNode(B, A)]);
+    const lifted = pts.map((p) => p.clone().add(new THREE.Vector3(0, 0.05, 0)));
+    const path = new THREE.CurvePath(); for (let i = 1; i < lifted.length; i++) path.add(new THREE.LineCurve3(lifted[i - 1], lifted[i]));
+    const L = polyLen(pts);
+    const mat = flowMaterial(DATA.levels[f.level]?.style ?? 0); mat.uniforms.uLen.value = L;
+    const tube = new THREE.Mesh(new THREE.TubeGeometry(path, Math.max(16, Math.ceil(L * 8)), 0.035, 6, false), mat);
+    tube.renderOrder = 4; tube.visible = false; tube.userData.flowId = f.id; scene.add(tube);
+    const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + pts[i].distanceTo(pts[i - 1]));
+    FLOWS.push({ d: f, pts, cum, L, tube, mat, mid: pts[Math.floor(pts.length / 2)] });
+  }
+}
+function pickNode(A, B) { const ang = Math.atan2(B.cz - A.cz, B.cx - A.cx); const k = ((Math.round(ang / (Math.PI / 3)) % 6) + 6) % 6; return ((k + 3) % 6) * 2; }
+function samplePath(F, s, out, tan) {
+  const c = F.cum; let i = 1; while (i < c.length - 1 && c[i] < s) i++;
+  const a = F.pts[i - 1], b = F.pts[i]; const seg = c[i] - c[i - 1] || 1; const f = THREE.MathUtils.clamp((s - c[i - 1]) / seg, 0, 1);
+  out.lerpVectors(a, b, f); tan.subVectors(b, a).normalize();
+}
+
+const WALKERS = []; const WM = {};
+const ROLE_SHIRTS = { consultant: '#ffffff', engineer: '#5e7fb8', researcher: '#e8eef0', student: '#f2b5c6', traveler: '#58a6a6' };
+const CARGO_COL = { briefcase: '#7a4f36', gear: '#8d939a', speech: '#ffffff', laptop: '#3d3a40', book: '#c5050c', chart: '#58a6a6', code: '#6f7fb5', ball: '#ffffff', cap: '#2b2424' };
+function buildWalkers() {
+  let total = 0; for (const F of FLOWS) total += F.d.walkers;
+  const std = (c) => new THREE.MeshStandardMaterial({ roughness: 0.7 });
+  const defs = {
+    leg: [new THREE.CylinderGeometry(0.022, 0.02, 0.1, 6), 2], arm: [new THREE.CylinderGeometry(0.016, 0.014, 0.09, 6), 2],
+    body: [new THREE.CapsuleGeometry(0.055, 0.05, 4, 8), 1], head: [new THREE.SphereGeometry(0.072, 14, 10), 1],
+    hair: [new THREE.SphereGeometry(0.077, 14, 8, 0, Math.PI * 2, 0, Math.PI * 0.55), 1], eye: [new THREE.SphereGeometry(0.011, 6, 4), 2],
+    cargo: [new THREE.BoxGeometry(0.075, 0.06, 0.055), 1], vest: [new THREE.CylinderGeometry(0.06, 0.063, 0.08, 10), 1],
+    badge: [new THREE.BoxGeometry(0.022, 0.028, 0.006), 1], coat: [new THREE.CylinderGeometry(0.06, 0.078, 0.13, 10), 1],
+    cap: [new THREE.SphereGeometry(0.079, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2), 1], brim: [new THREE.CylinderGeometry(0.05, 0.05, 0.008, 12), 1],
+    pack: [new THREE.BoxGeometry(0.075, 0.08, 0.04), 1], helmet: [new THREE.SphereGeometry(0.082, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2), 1],
+    bag: [new THREE.BoxGeometry(0.075, 0.1, 0.045), 1],
+  };
+  for (const k in defs) { const [g, per] = defs[k]; const m = new THREE.InstancedMesh(g, std(), total * per); m.instanceMatrix.setUsage(THREE.DynamicDrawUsage); m.castShadow = k === 'body' || k === 'head'; m.frustumCulled = false; WM[k] = m; scene.add(m); }
+  WM.shadow = new THREE.InstancedMesh(new THREE.CircleGeometry(0.09, 16).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: '#000000', transparent: true, opacity: 0.22, depthWrite: false }), total);
+  WM.shadow.instanceMatrix.setUsage(THREE.DynamicDrawUsage); WM.shadow.frustumCulled = false; WM.shadow.renderOrder = 3; scene.add(WM.shadow);
+  const rnd = mulberry32(2024); let n = 0;
+  const skins = ['#f1c9a5', '#e2b48c', '#c98f68', '#f5d5b8']; const hairs = ['#2b1d16', '#3a2a22', '#5a3a26', '#1c1c22', '#7a5536'];
+  const c = new THREE.Color();
+  for (const F of FLOWS) {
+    for (let k = 0; k < F.d.walkers; k++) {
+      const role = F.d.role; const i = n++;
+      const shirt = role === 'consultant' ? '#ffffff' : (role === 'student' ? PASTELS[k % PASTELS.length] : ROLE_SHIRTS[role]);
+      const w = { i, F, role, s: rnd() * F.L, dir: rnd() < 0.5 ? 1 : -1, speed: 0.32 + rnd() * 0.08, phase: rnd(), wait: 0, lane: (rnd() - 0.5) * 0.06, pos: new THREE.Vector3(), tan: new THREE.Vector3(), yaw: 0, sc: 1 };
+      WM.body.setColorAt(i, c.set(shirt)); WM.head.setColorAt(i, c.set(skins[(rnd() * 4) | 0])); WM.hair.setColorAt(i, c.set(hairs[(rnd() * 5) | 0]));
+      for (const j of [0, 1]) { WM.leg.setColorAt(i * 2 + j, c.set(role === 'traveler' ? '#c9b48a' : '#3e3a46')); WM.arm.setColorAt(i * 2 + j, c.set(shirt === '#ffffff' ? '#f1c9a5' : shirt)); WM.eye.setColorAt(i * 2 + j, c.set('#211d1d')); }
+      WM.cargo.setColorAt(i, c.set(CARGO_COL[F.d.cargo] || PAL.wood));
+      WM.vest.setColorAt(i, c.set(PAL.red)); WM.badge.setColorAt(i, c.set('#ffffff')); WM.coat.setColorAt(i, c.set('#ffffff'));
+      WM.cap.setColorAt(i, c.set(role === 'traveler' ? PAL.teal : PAL.yellow)); WM.brim.setColorAt(i, c.set(role === 'traveler' ? PAL.teal : PAL.yellow));
+      WM.pack.setColorAt(i, c.set(PAL.blue)); WM.helmet.setColorAt(i, c.set('#f2b134')); WM.bag.setColorAt(i, c.set(PAL.coral));
+      // badge sprite
+      const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: badgeTexture(F.d.cargo), depthWrite: false })); sp.scale.set(0.16, 0.16, 1); sp.visible = false; sp.renderOrder = 5; scene.add(sp); w.sprite = sp;
+      WALKERS.push(w);
+    }
+  }
+  for (const k in WM) if (WM[k].instanceColor) WM[k].instanceColor.needsUpdate = true;
+  updateWalkers(0, false);
+  // seed the log with each flow's first departure
+  for (const F of FLOWS) { const w = WALKERS.find((x) => x.F === F); if (w) LOG.unshift({ kind: 'depart', flow: F.d.id, min: state.minutes, role: F.d.role, cargo: F.d.cargo, island: w.dir > 0 ? F.d.from : F.d.to }); }
+}
+const BADGES = {};
+function badgeTexture(kind) {
+  if (BADGES[kind]) return BADGES[kind];
+  const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d');
+  g.fillStyle = '#ffffff'; g.beginPath(); g.arc(64, 64, 56, 0, 7); g.fill(); g.lineWidth = 9; g.strokeStyle = PAL.red; g.stroke();
+  g.strokeStyle = '#211d1d'; g.fillStyle = '#211d1d'; g.lineWidth = 6; g.lineCap = 'round'; g.lineJoin = 'round';
+  const L = (pts, close) => { g.beginPath(); pts.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); if (close) g.closePath(); g.stroke(); };
+  switch (kind) {
+    case 'briefcase': g.strokeRect(36, 48, 56, 38); L([[52, 48], [52, 40], [76, 40], [76, 48]]); L([[36, 64], [92, 64]]); break;
+    case 'gear': g.beginPath(); g.arc(64, 64, 18, 0, 7); g.stroke(); for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4; L([[64 + Math.cos(a) * 22, 64 + Math.sin(a) * 22], [64 + Math.cos(a) * 32, 64 + Math.sin(a) * 32]]); } break;
+    case 'speech': L([[36, 44], [92, 44], [92, 78], [60, 78], [46, 90], [48, 78], [36, 78]], true); L([[48, 58], [80, 58]]); break;
+    case 'laptop': g.strokeRect(42, 42, 44, 30); L([[32, 84], [96, 84]]); break;
+    case 'book': L([[64, 46], [64, 88]]); L([[64, 46], [36, 40], [36, 82], [64, 88], [92, 82], [92, 40], [64, 46]]); break;
+    case 'chart': L([[38, 88], [92, 88]]); L([[46, 88], [46, 66]]); L([[62, 88], [62, 52]]); L([[78, 88], [78, 40]]); break;
+    case 'code': L([[52, 46], [36, 64], [52, 82]]); L([[76, 46], [92, 64], [76, 82]]); L([[68, 42], [60, 86]]); break;
+    case 'ball': g.beginPath(); g.arc(64, 64, 24, 0, 7); g.stroke(); for (const [x, y] of [[56, 56], [70, 58], [62, 70], [74, 72]]) { g.beginPath(); g.arc(x, y, 3, 0, 7); g.fill(); } break;
+    case 'cap': L([[32, 56], [64, 42], [96, 56], [64, 70]], true); L([[46, 62], [46, 80], [64, 88], [82, 80], [82, 62]]); L([[96, 56], [96, 76]]); break;
+    default: g.beginPath(); g.arc(64, 64, 14, 0, 7); g.fill();
+  }
+  const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; BADGES[kind] = tx; return tx;
+}
+let _tmp;
+function updateWalkers(dt, move) {
+  if (!_tmp) _tmp = { base: new THREE.Matrix4(), loc: new THREE.Matrix4(), out: new THREE.Matrix4(), q: new THREE.Quaternion(), v: new THREE.Vector3(), s: new THREE.Vector3(), e: new THREE.Euler(), zero: new THREE.Matrix4().makeScale(0, 0, 0), up: new THREE.Vector3(0, 1, 0) };
+  const T_ = _tmp; const show = state.walkers;
+  const camD = camera.position.distanceTo(controls.target);
+  const scl = THREE.MathUtils.clamp(camD / 20, 1, 1.45);
+  const near = camD < 16;
+  for (const w of WALKERS) {
+    if (move && show) {
+      if (w.wait > 0) { w.wait -= dt; if (w.wait <= 0) { w.dir *= -1; if (w.i % 3 === 0) logEvent('depart', w); } }
+      else {
+        w.s += w.dir * w.speed * dt;
+        if (w.s >= w.F.L || w.s <= 0) { w.s = THREE.MathUtils.clamp(w.s, 0, w.F.L); w.wait = 1.4; if (w.i % 2 === 0) logEvent(w.i % 4 === 0 ? 'handoff' : 'arrive', w); }
+      }
+    }
+    samplePath(w.F, w.s, w.pos, w.tan);
+    const sideX = -w.tan.z, sideZ = w.tan.x; const off = w.dir * 0.07 + w.lane;
+    w.pos.x += sideX * off; w.pos.z += sideZ * off;
+    const walking = w.wait <= 0 && move;
+    const yaw = Math.atan2(w.tan.x * w.dir, w.tan.z * w.dir); w.yaw = yaw;
+    const ph = state.time * 9 + w.phase * 20;
+    const swing = (w.wait > 0 ? 0 : Math.sin(ph)) * (state.rm || state.paused ? 0.25 : 1);
+    const bob = w.wait > 0 ? 0 : Math.abs(Math.sin(ph)) * 0.012;
+    w.sc = scl;
+    T_.q.setFromAxisAngle(T_.up, yaw);
+    T_.base.compose(T_.v.set(w.pos.x, w.pos.y + bob, w.pos.z), T_.q, T_.s.set(scl, scl, scl));
+    const put = (mesh, idx, x, y, z) => {
+      if (!show) { mesh.setMatrixAt(idx, T_.zero); return; }
+      T_.loc.makeTranslation(x, y, z);
+      T_.out.multiplyMatrices(T_.base, T_.loc); mesh.setMatrixAt(idx, T_.out);
+    };
+    const limb = (mesh, idx, x, y, ang, len) => {
+      if (!show) { mesh.setMatrixAt(idx, T_.zero); return; }
+      T_.e.set(ang, 0, 0); T_.q.setFromEuler(T_.e);
+      T_.loc.compose(T_.v.set(x, y, 0), T_.q, T_.s.set(1, 1, 1));
+      T_.out.makeTranslation(0, -len / 2, 0); T_.loc.multiply(T_.out);
+      T_.out.multiplyMatrices(T_.base, T_.loc); mesh.setMatrixAt(idx, T_.out);
+    };
+    const i = w.i; const r = w.role;
+    limb(WM.leg, i * 2, -0.03, 0.105, swing * 0.55, 0.1); limb(WM.leg, i * 2 + 1, 0.03, 0.105, -swing * 0.55, 0.1);
+    limb(WM.arm, i * 2, -0.072, 0.225, -swing * 0.45, 0.09); limb(WM.arm, i * 2 + 1, 0.072, 0.225, swing * 0.45 * 0.3 - 0.6, 0.09);
+    put(WM.body, i, 0, 0.17, 0); put(WM.head, i, 0, 0.29, 0); put(WM.hair, i, 0, 0.298, -0.008);
+    put(WM.eye, i * 2, -0.026, 0.292, 0.066); put(WM.eye, i * 2 + 1, 0.026, 0.292, 0.066);
+    put(WM.cargo, i, 0.03, 0.2, 0.085);
+    const hide = (mesh) => mesh.setMatrixAt(i, T_.zero);
+    if (r === 'consultant') { put(WM.vest, i, 0, 0.18, 0); put(WM.badge, i, 0.03, 0.2, 0.062); } else { hide(WM.vest); hide(WM.badge); }
+    if (r === 'researcher') put(WM.coat, i, 0, 0.155, 0); else hide(WM.coat);
+    if (r === 'student' || r === 'traveler') { put(WM.cap, i, 0, 0.305, 0); put(WM.brim, i, 0, 0.31, 0.06); } else { hide(WM.cap); hide(WM.brim); }
+    if (r === 'student') put(WM.pack, i, 0, 0.19, -0.07); else hide(WM.pack);
+    if (r === 'engineer') put(WM.helmet, i, 0, 0.305, 0); else hide(WM.helmet);
+    if (r === 'traveler') put(WM.bag, i, 0.1, 0.06, -0.04); else hide(WM.bag);
+    if (show) { T_.out.compose(T_.v.set(w.pos.x, w.pos.y + 0.006, w.pos.z), T_.q.identity(), T_.s.set(scl, 1, scl)); WM.shadow.setMatrixAt(i, T_.out); } else WM.shadow.setMatrixAt(i, T_.zero);
+    w.sprite.visible = show && near; if (w.sprite.visible) w.sprite.position.set(w.pos.x, w.pos.y + 0.5 * scl, w.pos.z);
+    if (w.bubble) { const nb = show && state.names && camera.position.distanceTo(w.pos) < 14; w.bubble.visible = nb; if (nb) w.bubble.position.set(w.pos.x, w.pos.y + 0.62 * scl, w.pos.z); }
+  }
+  for (const k in WM) WM[k].instanceMatrix.needsUpdate = true;
+}
+function ensureBubbles() {
+  for (const w of WALKERS) {
+    if (!w.bubble) { const el = document.createElement('div'); el.className = 'bubble'; w.bubble = new CSS2DObject(el); w.bubble.visible = false; scene.add(w.bubble); }
+    w.bubble.element.textContent = `${t('carrying')} ${tr(DATA.cargo[w.F.d.cargo])}`;
+  }
+}
+
+// ---------- island log ----------
+const LOG = [];
+function logEvent(kind, w) {
+  const F = w.F.d; const at = w.s <= 0.01 ? F.from : F.to; const from = w.s <= 0.01 ? F.from : F.to;
+  LOG.unshift({ kind, flow: F.id, min: Math.floor(state.minutes), role: F.role, cargo: F.cargo, island: kind === 'depart' ? from : at });
+  if (LOG.length > 60) LOG.length = 60;
+  if (state.log) renderLog();
+}
+function renderLog() {
+  const list = $('#logList'); const rows = LOG.filter((e) => state.logFilter === 'all' || e.flow === state.logFilter).slice(0, 30);
+  const key = { arrive: 'evArrive', depart: 'evDepart', handoff: 'evHandoff' };
+  list.innerHTML = rows.map((e) => `<li><time>${hhmm(e.min)}</time><span><span class="k ${e.kind}">${esc(t(e.kind))}</span> · ${esc(fmt(t(key[e.kind]), { role: tr(DATA.roles[e.role]), cargo: tr(DATA.cargo[e.cargo]), island: tr(ISL[e.island].d.name) }))}</span></li>`).join('') || `<li class="empty">…</li>`;
+}
+
+// ============================================================
+// day / night
+// ============================================================
+const KF = [
+  [0, '1e2c58', '3f4f80', 'b4c2ff', 1.15, '94a2d8', '64566a', 1.85, 1, '5a88b2'],
+  [300, '26365f', '4c5688', 'b8c4ff', 1.0, '96a4da', '66586c', 1.85, 1, '5c8ab4'],
+  [360, '7f8fc4', 'f6c3a6', 'ffb48a', 1.3, 'f3c6b5', '6b5a5a', 1.1, 0.55, '8fb7c4'],
+  [450, 'a9d1ea', 'fbe6d3', 'ffe2c4', 2.4, 'eaf2f6', '8a7a68', 1.25, 0, '9fcfd6'],
+  [720, '9fd0ec', 'f4eee3', 'fff1de', 2.9, 'eef6fa', '8f8270', 1.35, 0, 'a9d8db'],
+  [960, 'a6cfe6', 'f8e7d2', 'ffe3c0', 2.5, 'f1efe8', '8a7a66', 1.25, 0, '9fcbd2'],
+  [1065, '8b8fc4', 'f7b98f', 'ff9f6a', 1.8, 'f6d2bc', '7d6660', 1.2, 0.3, '93a9bd'],
+  [1140, '5a5e9e', 'd99aa6', 'ff9a7a', 1.3, 'c0b2e0', '655868', 1.35, 0.75, '6a7cab'],
+  [1260, '22325f', '445488', 'c0ccff', 1.2, '98a8dc', '685a6e', 1.9, 1, '5a88b2'],
+  [1440, '1e2c58', '3f4f80', 'b4c2ff', 1.15, '94a2d8', '64566a', 1.85, 1, '5a88b2'],
+].map((k) => k.map((v, i) => (typeof v === 'string' ? new THREE_COLOR_LAZY(v) : v)));
+function THREE_COLOR_LAZY(hex) { this.hex = '#' + hex; }
+const _c = {}; const DEEP = [0.68, 0.8, 0.86];
+let lastSunQ = -1;
+function applyDay(min, force) {
+  let i = 0; while (i < KF.length - 2 && KF[i + 1][0] <= min) i++;
+  const a = KF[i], b = KF[i + 1]; const f = (min - a[0]) / (b[0] - a[0] || 1);
+  const L = (k, key) => (_c[key] ||= new THREE.Color()).copy(col(a[k].hex)).lerp(col(b[k].hex), f);
+  const top = L(1, 'top'), hor = L(2, 'hor'), sunC = L(3, 'sun'), hs = L(5, 'hs'), hg = L(6, 'hg'), wc = L(9, 'w');
+  const sunI = a[4] + (b[4] - a[4]) * f, hemiI = a[7] + (b[7] - a[7]) * f, night = a[8] + (b[8] - a[8]) * f;
+  skyMat.uniforms.uTop.value.copy(top); skyMat.uniforms.uHorizon.value.copy(hor); skyMat.uniforms.uSun.value.copy(sunC); skyMat.uniforms.uNight.value = night;
+  scene.fog.color.copy(hor);
+  sun.color.copy(sunC); sun.intensity = sunI; hemi.color.copy(hs); hemi.groundColor.copy(hg); hemi.intensity = hemiI;
+  waterMat.uniforms.uShallow.value.copy(wc); waterMat.uniforms.uDeep.value.setRGB(wc.r * DEEP[0], wc.g * DEEP[1], wc.b * DEEP[2]); waterMat.uniforms.uNight.value = night;
+  glowMat.emissiveIntensity = night * 3.2;
+  poolMesh.material.opacity = night * 0.6;
+  for (const m of mountainMeshes) m.material.color.copy(m.userData.base).lerp(hor, m.userData.mix + night * 0.15);
+  const q = Math.floor(min / 10) * 10;
+  if (q !== lastSunQ || force) {
+    lastSunQ = q;
+    const tt = THREE.MathUtils.clamp((q - 360) / 720, 0, 1); const az = Math.PI * (0.15 + 0.7 * tt); const el = 0.35 + Math.sin(tt * Math.PI) * 0.75;
+    const dir = new THREE.Vector3(Math.cos(az) * Math.cos(el), Math.sin(el), 0.55 * Math.cos(el) + 0.35).normalize();
+    sun.position.set(center.x + dir.x * 40, dir.y * 40, center.z + dir.z * 40); skyMat.uniforms.uSunDir.value.copy(dir);
+  }
+  // day segment
+  const seg = DATA.dayCycle.findIndex((s) => min >= s.from && min < s.to);
+  if (seg !== state.segIdx) { state.segIdx = seg; recolor(); markPins(); }
+}
+const hhmm = (m) => `${String(Math.floor(m / 60) % 24).padStart(2, '0')}:${String(Math.floor(m % 60)).padStart(2, '0')}`;
+function litSet() { const s = DATA.dayCycle[state.segIdx]; return new Set(s ? s.items : []); }
+
+// ---------- highlight ----------
+let _hc;
+function recolor() {
+  _hc ||= new THREE.Color();
+  const lit = litSet(); const selItem = state.sel?.type === 'item' ? state.sel.id : null;
+  const touched = new Set();
+  for (const id in ITEMS) {
+    const parts = OWN[id] || []; const mode = id === selItem ? 'sel' : lit.has(id) ? 'lit' : '';
+    for (const p of parts) {
+      _hc.copy(p.c); if (mode === 'sel') _hc.lerp(col(PAL.coral), 0.22); else if (mode === 'lit') _hc.lerp(col(PAL.yellow), 0.22);
+      p.mesh.setColorAt(p.i, _hc); touched.add(p.mesh);
+    }
+  }
+  touched.forEach((m) => { m.instanceColor.needsUpdate = true; }); dirty = true;
+}
+
+// ============================================================
+// camera
+// ============================================================
+const ease = (k) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+function flyTo(pos, target, instant) {
+  if (state.rm || instant) { flight = null; camera.position.copy(pos); controls.target.copy(target); controls.update(); dirty = true; return; }
+  flight = { p0: camera.position.clone(), t0: controls.target.clone(), p1: pos, t1: target, start: performance.now(), dur: 800 };
+}
+function cardShift() { /* framing handled by the view offset below */ }
+// keep the scene centred in the area not covered by cards / sheets
+const viewOff = { x: 0, y: 0 }, viewOffT = { x: 0, y: 0 };
+function computeViewOffset() {
+  const app = $('#app'); const w = app.clientWidth, h = app.clientHeight; let l = 0, r = w, b = h;
+  if (innerWidth > 800) { const c = $('#card'); if (!c.hidden) l = c.getBoundingClientRect().right; const sd = $('#side'); if (!sd.hidden) r = sd.getBoundingClientRect().left; }
+  else for (const id of ['#card', '#side']) { const e = $(id); if (!e.hidden) b = Math.min(b, e.getBoundingClientRect().top); }
+  viewOffT.x = (l + r) / 2 - w / 2; viewOffT.y = (0 + b) / 2 - h / 2; dirty = true;
+}
+function applyViewOffset(dt) {
+  const k = state.rm ? 1 : Math.min(1, dt * 6);
+  viewOff.x += (viewOffT.x - viewOff.x) * k; viewOff.y += (viewOffT.y - viewOff.y) * k;
+  if (Math.abs(viewOffT.x - viewOff.x) < 0.5) viewOff.x = viewOffT.x; if (Math.abs(viewOffT.y - viewOff.y) < 0.5) viewOff.y = viewOffT.y;
+  const app = $('#app'); const w = app.clientWidth, h = app.clientHeight;
+  camera.setViewOffset(w, h, -viewOff.x, -viewOff.y, w, h);
+  return viewOff.x !== viewOffT.x || viewOff.y !== viewOffT.y;
+}
+function overviewDist() { const a = camera.aspect; return a > 1.3 ? 28.5 : a > 0.8 ? 38 : 56; }
+function overview(instant) {
+  setBird(false, true);
+  const tgt = new THREE.Vector3(center.x, 0.4, center.z); const dir = new THREE.Vector3(0.24, 0.33, 0.87).normalize();
+  flyTo(tgt.clone().addScaledVector(dir, overviewDist()), tgt, instant);
+}
+function setBird(on, silent) {
+  state.bird = on; $('#tgBird').setAttribute('aria-pressed', String(on));
+  controls.minPolarAngle = on ? 0 : THREE.MathUtils.degToRad(25);
+  if (silent) return;
+  if (on) { const tgt = new THREE.Vector3(center.x, 0.4, center.z); flyTo(tgt.clone().add(new THREE.Vector3(0.01, 42, 6)), tgt); }
+  else overview();
+}
+
+// ============================================================
+// selection
+// ============================================================
+function selectIsland(id) {
+  const isl = ISL[id]; if (!isl) return;
+  state.sel = { type: 'island', id }; afterSelect(isl);
+  openCard(islandCard(isl));
+  const tgt = new THREE.Vector3(isl.cx, TOP, isl.cz); const pos = tgt.clone().add(new THREE.Vector3(2.75, 5.3, 6.2).multiplyScalar(1.45)); cardShift(pos, tgt); flyTo(pos, tgt);
+}
+function selectItem(id) {
+  const it = ITEMS[id]; if (!it) return;
+  state.sel = { type: 'item', id }; afterSelect(it.isl);
+  openCard(itemCard(it));
+  const tgt = new THREE.Vector3(it.x, TOP + (it.height - TOP) * 0.45, it.z); const pos = tgt.clone().add(new THREE.Vector3(1.6, 2.5, 3.2).multiplyScalar(0.9 + it.size * 1.4)); flyTo(pos, tgt);
+}
+function selectFlow(id, walker) {
+  const F = FLOWS.find((f) => f.d.id === id); if (!F) return;
+  state.sel = { type: 'flow', id }; afterSelect(null);
+  openCard(flowCard(F, walker));
+  const tgt = walker ? walker.pos.clone() : F.mid.clone(); const pos = tgt.clone().add(walker ? new THREE.Vector3(1.6, 2.5, 3.2).multiplyScalar(1.3) : new THREE.Vector3(2.75, 5.3, 6.2).multiplyScalar(1.45).multiplyScalar(1.45)); cardShift(pos, tgt); flyTo(pos, tgt);
+}
+function afterSelect(isl) {
+  if (state.bird) setBird(false, true);
+  recolor();
+  for (const L of LABELS) { const sel = isl && L.isl === isl; L.el.classList.toggle('sel', !!sel); L.el.classList.toggle('dim', !!state.sel && !sel); }
+  if (isl && state.sel.type !== 'flow') showPins(isl); else clearPins();
+  updateFlowVisibility(); renderSide();
+}
+function clearSelection() {
+  state.sel = null; closeCard(); recolor(); clearPins();
+  for (const L of LABELS) L.el.classList.remove('sel', 'dim');
+  updateFlowVisibility(); renderSide();
+}
+function flowRelated(F) {
+  const s = state.sel; if (!s) return false;
+  if (s.type === 'flow') return F.d.id === s.id;
+  const islId = s.type === 'island' ? s.id : ITEMS[s.id]?.isl.id;
+  return F.d.from === islId || F.d.to === islId;
+}
+function updateFlowVisibility() {
+  let any = false;
+  for (const F of FLOWS) { F.tube.visible = state.flowsAll || flowRelated(F); any ||= F.tube.visible; F.mat.uniforms.uStyle.value = state.rm ? 1 : (DATA.levels[F.d.level]?.style ?? 0); }
+  const lg = $('#legend'); lg.hidden = !any;
+  if (any) lg.innerHTML = Object.values(DATA.levels).map((l) => `<span><i class="legend-line ${['', 'dash', 'dot'][l.style]}"></i>${esc(tr(l))}</span>`).join('');
+  dirty = true;
+}
+
+// ============================================================
+// cards
+// ============================================================
+function openCard(html) {
+  const c = $('#card'); $('#cardBody').innerHTML = html; c.hidden = false; c.classList.remove('full'); c.style.height = ''; $('#cardBody').scrollTop = 0;
+  wireCard(); computeViewOffset();
+}
+function closeCard() { $('#card').hidden = true; computeViewOffset(); }
+function wireCard() {
+  $('#cardBody').querySelectorAll('[data-item]').forEach((b) => b.addEventListener('click', () => selectItem(b.dataset.item)));
+  $('#cardBody').querySelectorAll('[data-island]').forEach((b) => b.addEventListener('click', () => selectIsland(b.dataset.island)));
+  $('#cardBody').querySelectorAll('[data-flow]').forEach((b) => b.addEventListener('click', () => selectFlow(b.dataset.flow)));
+}
+function chipsHTML(list, cls = '') { return `<div class="chips">${list.map((s) => `<span class="chip ${cls}">${esc(s)}</span>`).join('')}</div>`; }
+function flowChips(isl) {
+  const fs = FLOWS.filter((F) => F.d.from === isl.id || F.d.to === isl.id);
+  if (!fs.length) return '';
+  return `<div class="eyebrow section-label">${esc(t('flowsHere'))}</div><div class="chips">${fs.map((F) => `<button class="chip" data-flow="${F.d.id}">${F.d.from === isl.id ? '→' : '←'} ${esc(tr(F.d.name))}</button>`).join('')}</div>`;
+}
+function islandCard(isl) {
+  const d = isl.d;
+  return `<div class="card-head"><div class="isl-icon" style="background:${d.accent}">${esc(d.icon)}</div><div><div class="eyebrow">${esc(t('island'))} ${String(isl.idx + 1).padStart(2, '0')}</div><h2 class="card-title">${esc(tr(d.name))}</h2><div class="muted-line">${esc(per(d.period))}</div></div></div>
+  <p class="card-p">${esc(tr(d.summary))}</p>
+  <div class="eyebrow section-label">${esc(t('onIsland'))}</div>
+  <ul class="item-list">${isl.items.map((it, i) => `<li><button class="btn" data-item="${it.d.id}"><span class="num">${i + 1}</span><span>${esc(tr(it.d.name))}</span></button></li>`).join('')}</ul>
+  <div class="eyebrow section-label">${esc(t('skills'))}</div>${chipsHTML(d.skills, 'cream')}
+  ${flowChips(isl)}
+  <a class="ext" href="${esc(d.link)}" target="${tgt(d.link)}" rel="noopener">${esc(t('openSite'))} ↗</a>`;
+}
+const per = (p) => (LANG === 'zh' ? String(p).replace('Present', '至今').replace('weekends', '週末') : p);
+function parseYM(s) { if (!s) return null; if (/present|now/i.test(s)) { const n = new Date(); return n.getFullYear() + n.getMonth() / 12; } const m = /(\d{2})\/(\d{4})/.exec(s); return m ? +m[2] + (+m[1] - 1) / 12 : null; }
+function timelineHTML(period) {
+  if (!period) return '';
+  const [a, b] = period.split('–').map((s) => s.trim()); const s0 = parseYM(a), s1 = parseYM(b) ?? s0; const label = per(period); if (s0 == null) return '';
+  const Y0 = 2013, Y1 = 2027; const L = (v) => ((v - Y0) / (Y1 - Y0)) * 100;
+  const w = Math.max(L(s1 + 1 / 12) - L(s0), 1.5);
+  return `<div class="eyebrow section-label">${esc(t('timeline'))} · ${esc(label)}</div><div class="timeline" aria-hidden="true"><div class="track"></div><div class="span" style="left:${L(s0)}%;width:${w}%"></div><div class="ticks"><span>2013</span><span>2017</span><span>2021</span><span>2025</span></div></div>`;
+}
+function itemCard(it) {
+  const d = it.d, isl = it.isl; const facts = d.facts || [];
+  const tiles = facts.slice(0, 3).map((f) => `<div class="tile"><b title="${esc(f.n)}">${esc(f.n)}</b><span>${esc(tr(f))}</span></div>`).join('');
+  const links = [...(d.links || [])]; const main = d.link || isl.d.link;
+  return `<div class="card-head"><div><div class="eyebrow"><button class="chip" data-island="${isl.id}" style="padding:2px 9px;min-height:0;font:inherit">${esc(tr(isl.d.name))}</button> · ${it.idx + 1}</div><h2 class="card-title">${esc(tr(d.name))}</h2></div></div>
+  <img class="thumb" alt="" src="${thumbFor(it)}">
+  <p class="card-p">${esc(tr(d.desc))}</p>
+  ${tiles ? `<div class="tiles">${tiles}</div>` : ''}
+  ${timelineHTML(d.period)}
+  ${d.tags?.length ? `<div class="eyebrow section-label">${esc(t('tags'))}</div>${chipsHTML(d.tags)}` : ''}
+  ${links.length ? `<div class="chips" style="margin-top:14px">${links.map((l) => `<a class="chip" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`).join('')}</div>` : ''}
+  <a class="ext" href="${esc(main)}" target="${tgt(main)}" rel="noopener">${esc(t('openSite'))} ↗</a>`;
+}
+function flowCard(F, w) {
+  const d = F.d; const lv = DATA.levels[d.level];
+  return `<div class="card-head"><div><div class="eyebrow">${esc(t('skillFlow'))}</div><h2 class="card-title">${esc(tr(d.name))}</h2></div></div>
+  <div class="flow-route"><button class="chip" data-island="${d.from}">${esc(tr(ISL[d.from].d.name))}</button><span class="arrow">→</span><button class="chip" data-island="${d.to}">${esc(tr(ISL[d.to].d.name))}</button></div>
+  <p class="card-p">${esc(tr(d.desc))}</p>
+  <div class="eyebrow section-label">${esc(t('legendTitle'))}</div><p class="card-p" style="margin-top:0"><i class="legend-line ${['', 'dash', 'dot'][lv.style]}"></i> ${esc(tr(lv))}</p>
+  <div class="eyebrow section-label">${esc(t('carrier'))}</div>
+  <p class="card-p" style="margin-top:0">${esc(tr(DATA.roles[d.role]))} · ${esc(t('carrying'))} ${esc(tr(DATA.cargo[d.cargo]))} × ${d.walkers}</p>`;
+}
+
+// ---------- thumbnails ----------
+let thumbR, thumbScene, thumbCam; const THUMBS = {};
+function thumbFor(it) {
+  if (THUMBS[it.d.id]) return THUMBS[it.d.id];
+  try {
+    if (!thumbR) {
+      const cv = document.createElement('canvas'); cv.width = cv.height = 320;
+      thumbR = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true, preserveDrawingBuffer: true }); thumbR.setSize(160, 160, false); thumbR.setPixelRatio(2);
+      thumbR.outputColorSpace = THREE.SRGBColorSpace; thumbR.toneMapping = THREE.ACESFilmicToneMapping;
+      thumbScene = new THREE.Scene(); thumbScene.add(new THREE.HemisphereLight(0xeef6fa, 0x8f8270, 1.5));
+      const dl = new THREE.DirectionalLight(0xfff1de, 2.6); dl.position.set(2, 4, 3); thumbScene.add(dl);
+      thumbCam = new THREE.PerspectiveCamera(30, 1, 0.1, 50);
+    }
+    const g = new THREE.Group(); const mats = [];
+    for (const p of it.parts) { const m = new THREE.MeshStandardMaterial({ color: p.c, roughness: 0.78, emissive: p.kind.startsWith('glow') ? new THREE.Color('#ffc777') : new THREE.Color(0), emissiveIntensity: 0 }); mats.push(m); const mesh = new THREE.Mesh(GEO[p.kind], m); mesh.applyMatrix4(p.m); g.add(mesh); }
+    thumbScene.add(g);
+    const box = new THREE.Box3().setFromObject(g); const c = box.getCenter(new THREE.Vector3()); const sz = box.getSize(new THREE.Vector3()).length();
+    thumbCam.position.set(c.x + sz * 0.9, c.y + sz * 0.75, c.z + sz * 1.45); thumbCam.lookAt(c);
+    thumbR.render(thumbScene, thumbCam);
+    THUMBS[it.d.id] = thumbR.domElement.toDataURL('image/png');
+    thumbScene.remove(g); mats.forEach((m) => m.dispose());
+  } catch (e) { THUMBS[it.d.id] = 'data:image/gif;base64,R0lGODlhAQABAAAAACw='; }
+  return THUMBS[it.d.id];
+}
+
+// ============================================================
+// sidebar
+// ============================================================
+function matches(q, ...vals) { return vals.some((v) => (typeof v === 'string' ? v : [v?.en, v?.zh].join(' ')).toLowerCase().includes(q)); }
+function renderSide() {
+  const box = $('#sideList'); const q = state.query.trim().toLowerCase();
+  if (state.tab === 'topics') {
+    const html = ISL_LIST.map((isl, i) => {
+      const islHit = !q || matches(q, isl.d.name, isl.d.summary, ...isl.d.skills);
+      const items = isl.items.filter((it) => !q || islHit || matches(q, it.d.name, it.d.desc, ...(it.d.tags || [])));
+      if (q && !islHit && !items.length) return '';
+      const open = q || state.sel && ((state.sel.type === 'island' && state.sel.id === isl.id) || (state.sel.type === 'item' && ITEMS[state.sel.id]?.isl === isl));
+      return `<details ${open ? 'open' : ''}><summary><span class="dot" style="background:${isl.d.accent}"></span><span>${String(i + 1).padStart(2, '0')} ${esc(tr(isl.d.name))}</span><span class="count">${isl.items.length} ${esc(t('items'))}</span></summary>
+        <ul class="item-list"><li><button class="btn" data-island="${isl.id}" style="font-weight:600">${esc(t('openIsland'))} →</button></li>${items.map((it) => `<li><button class="btn" data-item="${it.d.id}"><span class="num">${it.idx + 1}</span><span>${esc(tr(it.d.name))}</span></button></li>`).join('')}</ul></details>`;
+    }).join('');
+    box.innerHTML = html || `<p class="empty">${esc(t('noResults'))}</p>`;
+  } else {
+    const fs = FLOWS.filter((F) => !q || matches(q, F.d.name, F.d.desc, ISL[F.d.from].d.name, ISL[F.d.to].d.name));
+    box.innerHTML = fs.map((F) => `<button class="btn flow-row" data-flow="${F.d.id}"><span><i class="legend-line ${['', 'dash', 'dot'][DATA.levels[F.d.level].style]}"></i> <b>${esc(tr(F.d.name))}</b></span><small>${esc(tr(ISL[F.d.from].d.name))} → ${esc(tr(ISL[F.d.to].d.name))} · ${esc(tr(DATA.levels[F.d.level]))}</small></button>`).join('') || `<p class="empty">${esc(t('noResults'))}</p>`;
+  }
+  box.querySelectorAll('[data-item]').forEach((b) => b.addEventListener('click', () => { selectItem(b.dataset.item); if (innerWidth <= 800) toggleSide(false); }));
+  box.querySelectorAll('[data-island]').forEach((b) => b.addEventListener('click', () => { selectIsland(b.dataset.island); if (innerWidth <= 800) toggleSide(false); }));
+  box.querySelectorAll('[data-flow]').forEach((b) => b.addEventListener('click', () => { selectFlow(b.dataset.flow); if (innerWidth <= 800) toggleSide(false); }));
+}
+function toggleSide(on) {
+  const s = $('#side'); s.hidden = !on; $('#btnList').setAttribute('aria-pressed', String(on)); $('#app').classList.toggle('side-closed', !on);
+  if (on) { s.classList.remove('full'); s.style.height = ''; renderSide(); }
+  computeViewOffset();
+}
+
+// ============================================================
+// UI wiring
+// ============================================================
+function applyStaticI18n() {
+  document.documentElement.lang = LANG === 'zh' ? 'zh-Hant' : 'en';
+  document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
+  $('#search').placeholder = t('search');
+  $('#btnLang').textContent = LANG === 'en' ? '中' : 'EN';
+  $('#btnLang').setAttribute('aria-label', LANG === 'en' ? '切換成中文' : 'Switch to English');
+  $('#ldTitle').textContent = tr(DATA.person.short);
+}
+function setLang(l) {
+  LANG = l; lsSet('jli-lang', l); applyStaticI18n(); updateLabelText(); renderSide(); updateClock(true); updateFlowVisibility(); fillLogFilter();
+  if (state.names) ensureBubbles(); if (state.log) renderLog();
+  if (state.sel) { const s = state.sel; if (s.type === 'island') openCard(islandCard(ISL[s.id])); else if (s.type === 'item') openCard(itemCard(ITEMS[s.id])); else openCard(flowCard(FLOWS.find((f) => f.d.id === s.id))); }
+  for (const p of PINS) p.el.setAttribute('aria-label', tr(p.item.d.name));
+}
+function fillLogFilter() {
+  const sel = $('#logFilter'); sel.innerHTML = `<option value="all">${esc(t('allFlows'))}</option>` + FLOWS.map((F) => `<option value="${F.d.id}">${esc(tr(F.d.name))}</option>`).join(''); sel.value = state.logFilter;
+}
+let lastClock = '';
+function updateClock(force) {
+  const s = hhmm(state.minutes); if (s === lastClock && !force) return; lastClock = s;
+  $('#clockTime').textContent = s; const seg = DATA.dayCycle[state.segIdx]; $('#clockSeg').textContent = seg ? tr(seg.name) : '';
+}
+function setPressed(id, v) { $(id).setAttribute('aria-pressed', String(v)); }
+function openHelp() { $('#help').hidden = false; $('#helpGo').focus(); }
+function initUI() {
+  $('#cardClose').addEventListener('click', () => clearSelection());
+  $('#btnOverview').addEventListener('click', () => { clearSelection(); overview(); });
+  $('#btnList').addEventListener('click', () => toggleSide($('#side').hidden));
+  $('#btnHelp').addEventListener('click', openHelp);
+  $('#btnLang').addEventListener('click', () => setLang(LANG === 'en' ? 'zh' : 'en'));
+  $('#helpGo').addEventListener('click', () => { $('#help').hidden = true; lsSet('jli-help', '1'); });
+  $('#help').addEventListener('click', (e) => { if (e.target.id === 'help') { $('#help').hidden = true; lsSet('jli-help', '1'); } });
+  $('#search').addEventListener('input', (e) => { state.query = e.target.value; renderSide(); });
+  $('#tabTopics').addEventListener('click', () => { state.tab = 'topics'; setPressed('#tabTopics', true); setPressed('#tabFlows', false); renderSide(); });
+  $('#tabFlows').addEventListener('click', () => { state.tab = 'flows'; setPressed('#tabTopics', false); setPressed('#tabFlows', true); renderSide(); });
+  document.querySelectorAll('#hud [data-time]').forEach((b) => b.addEventListener('click', () => { state.minutes = +b.dataset.time; applyDay(state.minutes, true); updateClock(true); dirty = true; }));
+  $('#tgNames').addEventListener('click', () => { state.names = !state.names; setPressed('#tgNames', state.names); if (state.names) ensureBubbles(); else WALKERS.forEach((w) => w.bubble && (w.bubble.visible = false)); dirty = true; });
+  $('#tgWalkers').addEventListener('click', () => { state.walkers = !state.walkers; setPressed('#tgWalkers', state.walkers); updateWalkers(0, false); dirty = true; });
+  $('#tgFlows').addEventListener('click', () => { state.flowsAll = !state.flowsAll; setPressed('#tgFlows', state.flowsAll); updateFlowVisibility(); });
+  $('#tgPause').addEventListener('click', () => { state.paused = !state.paused; setPressed('#tgPause', state.paused); dirty = true; });
+  $('#tgBird').addEventListener('click', () => { clearSelection(); setBird(!state.bird); });
+  $('#tgLog').addEventListener('click', () => { state.log = !state.log; setPressed('#tgLog', state.log); $('#log').hidden = !state.log; if (state.log) renderLog(); dirty = true; });
+  $('#logFilter').addEventListener('change', (e) => { state.logFilter = e.target.value; renderLog(); });
+  $('#timeBtn').addEventListener('click', () => { const h = $('#hud'); const on = !h.classList.contains('open'); h.classList.toggle('open', on); $('#timeBtn').setAttribute('aria-expanded', String(on)); dirty = true; });
+  fillLogFilter(); renderSide(); updateClock(true);
+  if (innerWidth >= 1200) toggleSide(true);
+
+  // pointer picking
+  const cv = renderer.domElement; let down = null;
+  cv.addEventListener('pointerdown', (e) => { down = { x: e.clientX, y: e.clientY }; flight = null; });
+  cv.addEventListener('pointerup', (e) => { if (!down) return; const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y); down = null; if (moved <= 6) pick(e); });
+
+  // keyboard
+  addEventListener('keydown', (e) => {
+    if (e.target.closest && e.target.closest('input, select, textarea')) return;
+    if (e.key === 'Escape') { if (!$('#help').hidden) { $('#help').hidden = true; lsSet('jli-help', '1'); } else clearSelection(); return; }
+    const dA = { ArrowLeft: -0.12, ArrowRight: 0.12 }[e.key] || 0, dP = { ArrowUp: -0.08, ArrowDown: 0.08 }[e.key] || 0;
+    if (!dA && !dP) return; e.preventDefault(); flight = null;
+    const off = new THREE.Vector3().subVectors(camera.position, controls.target); const sph = new THREE.Spherical().setFromVector3(off);
+    sph.theta += dA; sph.phi = THREE.MathUtils.clamp(sph.phi + dP, controls.minPolarAngle, controls.maxPolarAngle);
+    off.setFromSpherical(sph); camera.position.copy(controls.target).add(off); controls.update(); dirty = true;
+  });
+
+  // reduced motion
+  const mq = matchMedia('(prefers-reduced-motion: reduce)');
+  const onRM = () => { state.rm = mq.matches; updateFlowVisibility(); dirty = true; };
+  mq.addEventListener ? mq.addEventListener('change', onRM) : mq.addListener(onRM);
+
+  // bottom-sheet drag (phones)
+  for (const id of ['#card', '#side']) {
+    const sheet = $(id); const h = sheet.querySelector('.handle'); let st = null;
+    h.addEventListener('pointerdown', (e) => { st = { y: e.clientY, h: sheet.getBoundingClientRect().height }; h.setPointerCapture(e.pointerId); });
+    h.addEventListener('pointermove', (e) => { if (!st) return; const nh = Math.max(80, st.h - (e.clientY - st.y)); sheet.style.height = nh + 'px'; });
+    h.addEventListener('pointerup', (e) => {
+      if (!st) return; const nh = sheet.getBoundingClientRect().height; const vh = $('#app').clientHeight; st = null; sheet.style.height = '';
+      if (nh > vh * 0.72) sheet.classList.add('full'); else if (nh < vh * 0.16) { if (id === '#card') clearSelection(); else toggleSide(false); } else sheet.classList.remove('full');
+      computeViewOffset();
+    });
+  }
+}
+function pick(e) {
+  const r = renderer.domElement.getBoundingClientRect();
+  const ndc = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  raycaster.setFromCamera(ndc, camera);
+  const targets = [...mainKit.meshes, ...topMeshes, ...FLOWS.filter((F) => F.tube.visible).map((F) => F.tube)];
+  if (state.walkers) targets.unshift(WM.body, WM.head);
+  const hits = raycaster.intersectObjects(targets, false);
+  for (const h of hits) {
+    if (h.object === WM.body || h.object === WM.head) { const w = WALKERS[h.instanceId]; if (w) return selectFlow(w.F.d.id, w); }
+    if (h.object.userData.flowId) return selectFlow(h.object.userData.flowId);
+    if (h.object.isInstancedMesh && h.object.userData.owners) {
+      const o = h.object.userData.owners[h.instanceId];
+      if (o && ITEMS[o]) return selectItem(o);
+      if (o && o.startsWith('isl:')) return selectIsland(o.slice(4));
+      continue;
+    }
+    if (topMeshes.includes(h.object)) { let best = null, bd = Infinity; for (const isl of ISL_LIST) { const d = Math.hypot(h.point.x - isl.cx, h.point.z - isl.cz); if (d < bd) { bd = d; best = isl; } } if (best) return selectIsland(best.id); }
+  }
+  clearSelection();
+}
+
+// ============================================================
+// loop
+// ============================================================
+let last = performance.now(); let lastLOD = null;
+function loop(now) {
+  requestAnimationFrame(loop);
+  const dt = Math.min(0.08, (now - last) / 1000); last = now;
+  const animate = !state.paused && !state.rm;
+  if (animate) { state.minutes = (state.minutes + dt * 10) % 1440; state.time += dt; dirty = true; }
+  if (flight) { const k = Math.min(1, (now - flight.start) / flight.dur); const e = ease(k); camera.position.lerpVectors(flight.p0, flight.p1, e); controls.target.lerpVectors(flight.t0, flight.t1, e); if (k >= 1) flight = null; dirty = true; }
+  if (controls.update()) dirty = true;
+  if (applyViewOffset(dt)) dirty = true;
+  if (!dirty) return;
+  applyDay(state.minutes);
+  updateClock();
+  updateWalkers(dt, animate);
+  if (animate) { updateClouds(state.time); updateBoats(state.time); waterMat.uniforms.uTime.value = state.time; for (const F of FLOWS) F.mat.uniforms.uTime.value = state.time; }
+  const camD = camera.position.distanceTo(controls.target); const lod = camD < 26;
+  if (lod !== lastLOD) { lastLOD = lod; for (const m of smallKit.meshes) m.visible = lod; }
+  renderer.render(scene, camera);
+  labelRenderer.render(scene, camera);
+  layoutLabels();
+  dirty = false;
+}
+
+boot();
+
+</script>
+</body>
+</html>

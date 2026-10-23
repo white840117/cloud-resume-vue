@@ -10,6 +10,7 @@ import { profile } from './data/resume'
       <RouterLink to="/experience">Experience</RouterLink>
       <RouterLink to="/projects">Projects</RouterLink>
       <RouterLink to="/interests">Interests</RouterLink>
+      <RouterLink to="/island">Island</RouterLink>
     </nav>
   </header>
   <main class="container"><RouterView /></main>
