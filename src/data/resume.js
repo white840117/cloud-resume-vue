@@ -15,7 +15,22 @@ export const profile = {
     { value: '25+', label: 'Companies supported' },
     { value: '10+', label: 'Solutions & systems delivered' },
   ],
+  availability: 'MS in Information @ UW–Madison, graduating Dec 2026 · Available from January 2027 · Open to relocation',
   languages: ['Mandarin (Native)', 'English (Fluent)'],
+}
+
+export const focusAreas = [
+  { title: 'Solution Architecture', text: 'Directed cross-functional teams at HPE to define requirements and technical specifications, delivering $500k+ in customer value across 20+ enterprise initiatives.', link: '/experience' },
+  { title: 'Business Systems', text: 'Managed the full SDLC for a cross-border MES integration at IBM, bridging US and Taiwan teams through UAT.', link: '/experience' },
+  { title: 'Data & AI Automation', text: 'Built LLM-assisted tools that cut report turnaround from 2 hours to under 5 minutes and reduced resume customization time by over 60%.', link: '/projects' },
+]
+
+export const islandPreview = {
+  image: img('island-preview-day.webp'),
+  alt: '3D island map of my career, projects and interests',
+  title: 'Explore my career as a 3D island',
+  text: 'Each island is one part of my journey. Click buildings to see projects and results.',
+  cta: 'Open the island →',
 }
 
 export const experience = [
@@ -92,7 +107,7 @@ export const skills = {
 
 export const projects = [
   {
-    id: 'ado-to-word', title: 'ADO to Word Test Report Automation', period: '08/2026', tags: ['Vue 3', 'Flask', 'Azure DevOps API', 'LLM'],
+    id: 'ado-to-word', featured: true, title: 'ADO to Word Test Report Automation', period: '08/2026', tags: ['Vue 3', 'Flask', 'Azure DevOps API', 'LLM'],
     links: [{ label: 'GitHub: ADO_2_WORD', url: 'https://github.com/shaneliu-zf/ADO_2_WORD' }],
     bullets: [
       'Co-designed and co-built a full-stack automation tool with a colleague, implementing frontend (Vue 3) and backend (Flask) components, using Agent AI (IBM Bob) to accelerate code generation.',
@@ -101,7 +116,7 @@ export const projects = [
     ],
   },
   {
-    id: 'resume-generator', title: 'LLM Agent-Driven Resume Customization Platform', period: '09/2026 – Present', tags: ['Vue 3', 'TypeScript', 'Flask', 'python-docx'],
+    id: 'resume-generator', featured: true, title: 'LLM Agent-Driven Resume Customization Platform', period: '09/2026 – Present', tags: ['Vue 3', 'TypeScript', 'Flask', 'python-docx'],
     links: [],
     bullets: [
       'Designed and built a full-stack resume automation platform (Vue 3, TypeScript, Flask) integrating an LLM agent (Cursor SDK) to match job descriptions to resumes across four weighted dimensions and flag content gaps.',
@@ -109,7 +124,7 @@ export const projects = [
     ],
   },
   {
-    id: 'aws-cloud-resume', title: 'Serverless Cloud Portfolio & Automated CI/CD Pipeline', period: '04/2026 – Present', tags: ['Vue 3', 'Vite', 'AWS S3', 'CloudFront', 'Route 53', 'ACM', 'GitHub Actions'],
+    id: 'aws-cloud-resume', featured: true, title: 'Serverless Cloud Portfolio & Automated CI/CD Pipeline', period: '04/2026 – Present', tags: ['Vue 3', 'Vite', 'AWS S3', 'CloudFront', 'Route 53', 'ACM', 'GitHub Actions'],
     links: [{ label: 'GitHub: cloud-resume-vue', url: 'https://github.com/white840117/cloud-resume-vue' }],
     bullets: [
       'Architected a highly available serverless portfolio using AWS (S3, CloudFront) for storage and global edge delivery, and Claude AI for rapid infrastructure-as-code (IaC) deployment.',
