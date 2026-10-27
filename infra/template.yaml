@@ -1,0 +1,144 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Infrastructure for johnlo.cloud: private S3 bucket served through CloudFront
+  with Origin Access Control (OAC). Originally created manually in the console,
+  then imported into this stack with the CloudFormation IaC generator and
+  resource import (2026-10-27). Route 53 records and the ACM certificate are
+  managed manually.
+
+Parameters:
+  AcmCertificateArn:
+    Type: String
+    Description: ARN of the ACM certificate for johnlo.cloud (must be in us-east-1). Managed manually.
+
+Resources:
+  CloudFrontDistribution:
+    Type: "AWS::CloudFront::Distribution"
+    DeletionPolicy: "Retain"
+    UpdateReplacePolicy: "Retain"
+    Properties:
+      DistributionConfig:
+        Comment: ""
+        DefaultRootObject: "index.html"
+        Origins:
+        - ConnectionTimeout: 10
+          OriginAccessControlId: !GetAtt CloudFrontOriginAccessControl.Id
+          ConnectionAttempts: 3
+          OriginCustomHeaders: []
+          DomainName: "yuntinglo-resume-project-2026.s3.us-east-2.amazonaws.com"
+          OriginShield:
+            Enabled: false
+          S3OriginConfig:
+            OriginReadTimeout: 30
+            OriginAccessIdentity: ""
+          OriginPath: ""
+          Id: "yuntinglo-resume-project-2026.s3.us-east-2.amazonaws.com-mnxvy71em2a"
+        ViewerCertificate:
+          MinimumProtocolVersion: "TLSv1.3_2025"
+          SslSupportMethod: "sni-only"
+          AcmCertificateArn: !Ref AcmCertificateArn
+        PriceClass: "PriceClass_All"
+        DefaultCacheBehavior:
+          Compress: true
+          FunctionAssociations: []
+          LambdaFunctionAssociations: []
+          TargetOriginId: "yuntinglo-resume-project-2026.s3.us-east-2.amazonaws.com-mnxvy71em2a"
+          ViewerProtocolPolicy: "redirect-to-https"
+          GrpcConfig:
+            Enabled: false
+          TrustedSigners: []
+          FieldLevelEncryptionId: ""
+          TrustedKeyGroups: []
+          AllowedMethods:
+          - "HEAD"
+          - "GET"
+          CachedMethods:
+          - "HEAD"
+          - "GET"
+          SmoothStreaming: false
+          # AWS managed cache policy: CachingOptimized
+          CachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6"
+        Staging: false
+        CustomErrorResponses: []
+        ContinuousDeploymentPolicyId: ""
+        OriginGroups:
+          Quantity: 0
+          Items: []
+        Enabled: true
+        Aliases:
+        - "johnlo.cloud"
+        IPV6Enabled: true
+        WebACLId: ""
+        HttpVersion: "http2"
+        Restrictions:
+          GeoRestriction:
+            Locations: []
+            RestrictionType: "none"
+        CacheBehaviors: []
+      Tags:
+      - Value: "john-resume-website"
+        Key: "Name"
+
+  CloudFrontOriginAccessControl:
+    Type: "AWS::CloudFront::OriginAccessControl"
+    DeletionPolicy: "Retain"
+    UpdateReplacePolicy: "Retain"
+    Properties:
+      OriginAccessControlConfig:
+        SigningBehavior: "always"
+        Description: "Created by CloudFront"
+        SigningProtocol: "sigv4"
+        OriginAccessControlOriginType: "s3"
+        Name: "oac-yuntinglo-resume-project-2026.s3.us-east-2.amazo-mnxw25ea317"
+
+  S3BucketPolicyYuntingloresumeproject2026:
+    Type: "AWS::S3::BucketPolicy"
+    DeletionPolicy: "Retain"
+    UpdateReplacePolicy: "Retain"
+    Properties:
+      Bucket: "yuntinglo-resume-project-2026"
+      PolicyDocument:
+        Version: "2008-10-17"
+        Id: "PolicyForCloudFrontPrivateContent"
+        Statement:
+        - Sid: "AllowCloudFrontServicePrincipal"
+          Effect: "Allow"
+          Principal:
+            Service: "cloudfront.amazonaws.com"
+          Action: "s3:GetObject"
+          Resource: "arn:aws:s3:::yuntinglo-resume-project-2026/*"
+          Condition:
+            ArnLike:
+              AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}"
+
+  S3BucketYuntingloresumeproject2026:
+    Type: "AWS::S3::Bucket"
+    DeletionPolicy: "Retain"
+    UpdateReplacePolicy: "Retain"
+    Properties:
+      AbacStatus: "Disabled"
+      BucketName: "yuntinglo-resume-project-2026"
+      PublicAccessBlockConfiguration:
+        RestrictPublicBuckets: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        BlockPublicAcls: true
+      OwnershipControls:
+        Rules:
+        - ObjectOwnership: "BucketOwnerEnforced"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+        - BucketKeyEnabled: true
+          BlockedEncryptionTypes:
+            EncryptionType:
+            - "SSE-C"
+          ServerSideEncryptionByDefault:
+            SSEAlgorithm: "AES256"
+
+Outputs:
+  DistributionId:
+    Description: CloudFront distribution ID (used by the GitHub Actions cache invalidation)
+    Value: !Ref CloudFrontDistribution
+  DistributionDomainName:
+    Description: CloudFront domain name (Route 53 alias target)
+    Value: !GetAtt CloudFrontDistribution.DomainName
