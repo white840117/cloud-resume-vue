@@ -17,6 +17,21 @@ The system utilizes a **Serverless** architecture designed for scalability, secu
 * **DNS Management**: **Amazon Route 53** for domain routing and health checks.
 * **Security & Encryption**: **AWS Certificate Manager (ACM)** for SSL/TLS encryption (HTTPS).
 * **Automated Deployment**: **GitHub Actions** with **AWS CLI** for a seamless CI/CD pipeline.
+* **Infrastructure as Code**: **AWS CloudFormation** template in [`infra/template.yaml`](infra/template.yaml).
+
+### Infrastructure as Code
+
+The AWS resources were first created manually in the console, then brought under **CloudFormation** management (October 2026) without downtime or recreation:
+
+1. Scanned the account with the **IaC generator** and generated a template for the existing resources.
+2. Imported them into a stack with **resource import** ("Create stack with existing resources").
+3. Verified with **drift detection** (`IN_SYNC`) and kept the site and deployments running throughout.
+
+| Managed by the stack | Managed manually |
+|---|---|
+| S3 bucket, bucket policy, CloudFront distribution, Origin Access Control | Route 53 records, ACM certificate (`us-east-1`, passed in as the `AcmCertificateArn` parameter) |
+
+Every resource uses `DeletionPolicy: Retain` and `UpdateReplacePolicy: Retain`, so deleting the stack or a replacing update never deletes the live resources. Preview infrastructure changes with a **change set** before executing them.
 
 ---
 
@@ -53,7 +68,7 @@ Hash-based routing keeps deep links working on S3/CloudFront without extra rewri
 
 * **Frontend**: Vue 3, Vue Router, Vite, CSS3 (Badger Red Theme)
 * **Cloud Infrastructure**: Amazon Web Services (AWS)
-* **DevOps**: GitHub Actions, YAML, Git
+* **DevOps**: GitHub Actions, AWS CloudFormation, YAML, Git
 * **Networking**: DNS, CDN, SSL/TLS
 
 ---
