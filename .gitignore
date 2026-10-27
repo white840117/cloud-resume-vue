@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# AWS backups (do not commit)
+cf-backup.json
+policy-backup.json
